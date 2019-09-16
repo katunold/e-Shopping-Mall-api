@@ -18,6 +18,7 @@ import { Op } from 'sequelize';
 import { Actions } from '../utils/db-actions';
 import { signToken } from '../utils/jwt';
 import { validationResult } from 'express-validator';
+import Validations from '../utils/validation';
 
 /**
  *
@@ -30,39 +31,23 @@ class CustomerController {
 
   /**
    * create a customer record
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status, customer data and access token
-   * @memberof CustomerController
    */
   static async create(req, res) {
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      const errorArr = [];
-      errors.array().forEach(error => {
-        const errData = {
-          status: 422,
-          code: "USR_10",
-          message: error.msg,
-          field: error.param
-        };
-        errorArr.push(errData);
-      });
-      return res.status(422).json({ error: errorArr });
+      return Validations.errorDisplay(req, res, errors);
     }
 
-    const newUser = await db.Customer.findAll({
+    const newUser = await db.Customer.findOne({
       where: {
         email: {
           [CustomerController.op.and]: [req.body.email]
         }
       }
     });
+
 
     if (newUser) {
       return res.status(400).send({
@@ -80,43 +65,46 @@ class CustomerController {
       "email",
       "password"
     ]);
-
-    Object.assign(userData, {
-      address_1: null,
-      address_2: null,
-      city: null,
-      region: null,
-      postal_code: null,
-      credit_card: null,
-      day_phone: null,
-      eve_phone: null,
-      mob_phone: null,
-    });
-
-    delete userData.dataValues.password;
-
-    const { token, exp } = signToken(userData.dataValues.customer_id);
-
-    return res.status(201).json({
-      customer: userData,
-      accessToken: token,
-      expiresIn: exp - new Date().getTime()
-    });
+    CustomerController.authenticated(userData, res, 201);
   }
 
   /**
    * log in a customer
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status, and access token
-   * @memberof CustomerController
    */
-  static async login(req, res, next) {
-    // implement function to login to user account
-    return res.status(200).json({ message: 'this works' });
+
+  static async login(req, res) {
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return Validations.errorDisplay(req, res, errors);
+    }
+
+    const { email, password } = req.body;
+
+    const userData = await db.Customer.findOne({
+      where: {
+        email: email,
+      }
+    });
+
+    if (!userData) {
+      return res.status(404).send({
+        status: 404,
+        code: 'USR_05',
+        message: 'The email doesn\'t exist',
+        field: 'email'});
+    }
+
+    if (await db.Customer.validatePassword(password, userData.dataValues.password)){
+      return CustomerController.authenticated(userData, res, 200);
+    }
+
+    return res.status(400).send({
+      status: 400,
+      code: 'USR_01',
+      message: 'Email or Password is invalid.',
+      field: 'email or password'});
   }
 
   /**
@@ -187,6 +175,31 @@ class CustomerController {
     // write code to update customer credit card number
     return res.status(200).json({ message: 'this works' });
   }
+
+  static authenticated = (data, res, statusCode) => {
+    Object.assign(data, {
+      address_1: null,
+      address_2: null,
+      city: null,
+      region: null,
+      postal_code: null,
+      credit_card: null,
+      day_phone: null,
+      eve_phone: null,
+      mob_phone: null,
+    });
+
+    delete data.dataValues.password;
+
+    const { token, exp } = signToken(data.dataValues.customer_id);
+
+    return res.status(statusCode).json({
+      customer: data,
+      accessToken: token,
+      expiresIn: exp - new Date().getTime()
+    });
+  }
+
 }
 
 export default CustomerController;

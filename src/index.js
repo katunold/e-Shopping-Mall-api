@@ -4,7 +4,6 @@ import expressWinston from 'express-winston';
 import winston from 'winston';
 import morgan from 'morgan';
 import log from 'fancy-log';
-import expressValidator from 'express-validator';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import helmet from 'helmet';
