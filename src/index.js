@@ -36,7 +36,6 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-app.use(expressValidator());
 
 app.use(
   expressWinston.logger({

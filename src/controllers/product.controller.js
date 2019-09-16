@@ -25,9 +25,6 @@ import {
   Category,
   Sequelize,
 } from '../database/models';
-
-const { Op } = Sequelize;
-
 /**
  *
  *
