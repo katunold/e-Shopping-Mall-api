@@ -60,13 +60,16 @@ module.exports = (sequelize, DataTypes) => {
     customer.password = await customer.generatePasswordHash();
   });
 
+
   Customer.prototype.generatePasswordHash = async function generatePasswordHash() {
     const saltRounds = 8;
+    console.log(this.password);
     return bcrypt.hash(this.password, saltRounds);
   };
 
-  Customer.prototype.validatePassword = async function validatePassword(password) {
-    return bcrypt.compare(password, this.password);
+  Customer.validatePassword = async function validatePassword(password, hashed_password) {
+    console.log(this.password);
+    return bcrypt.compare(password, hashed_password);
   };
 
   Customer.prototype.getSafeDataValues = function getSafeDataValues() {

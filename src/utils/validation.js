@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, validationResult } from 'express-validator';
 
 export default class Validations {
 
@@ -23,6 +23,22 @@ export default class Validations {
           body('password', 'Password is required').exists().not().isEmpty()
         ];
     }
+  };
+
+  static errorDisplay = (req, res, errors) => {
+
+    const errorArr = [];
+
+    errors.array().forEach(error => {
+      const errData = {
+        status: 422,
+        code: "USR_10",
+        message: error.msg,
+        field: error.param
+      };
+      errorArr.push(errData);
+    });
+    return res.status(422).json({ error: errorArr });
   }
 
 }
