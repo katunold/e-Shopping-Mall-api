@@ -14,7 +14,6 @@ const customerModel = db.Customer;
 
 describe('Sign-up route', () => {
   let sandbox;
-  let expectedResult;
   let expectedOneResult;
 
   beforeEach(done => {

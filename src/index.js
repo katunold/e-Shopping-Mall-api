@@ -10,6 +10,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import router from './routes';
 
+require('./utils/passport-config');
+
 const isProduction = process.env.NODE_ENV === 'production';
 
 

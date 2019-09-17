@@ -47,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       day_phone: DataTypes.STRING(100),
       eve_phone: DataTypes.STRING(100),
       mob_phone: DataTypes.STRING(100),
+      facebook_id: DataTypes.STRING(100),
     },
     {
       underscored: true,
@@ -63,12 +64,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Customer.prototype.generatePasswordHash = async function generatePasswordHash() {
     const saltRounds = 8;
-    console.log(this.password);
     return bcrypt.hash(this.password, saltRounds);
   };
 
   Customer.validatePassword = async function validatePassword(password, hashed_password) {
-    console.log(this.password);
     return bcrypt.compare(password, hashed_password);
   };
 

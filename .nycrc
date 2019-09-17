@@ -14,6 +14,7 @@
 		"test",
 		"src/database/config/**",
 		"src/database/models/**",
+		"src/utils/passport-config.js",
 		"src/index.js"
 	],
 	"sourceMap": false,
