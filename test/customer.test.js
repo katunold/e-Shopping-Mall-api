@@ -1,8 +1,10 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
 import sinon from 'sinon';
+import { exceptions } from 'winston';
 import app from '../src';
 import mockData from './helpers/mock-data';
+import { userSignUp } from './helpers/test-setup';
 
 import db from '../src/database/models';
 
@@ -14,20 +16,9 @@ const customerModel = db.Customer;
 
 describe('Sign-up route', () => {
   let sandbox;
-  let expectedOneResult;
 
   beforeEach(done => {
     sandbox = sinon.createSandbox();
-    expectedOneResult = {
-      dataValues: {
-        shipping_region_id: 1,
-        customer_id: 20,
-        name: 'Arnold',
-        email: 'katunold94@gmail.com',
-        password: '$2b$08$mHXLCZj5vidKzlm0YPHIfuvLHxLa2T.C/i7/J9vvBtDPetQESZ/X2',
-      },
-    };
-
     done();
   });
 
@@ -41,7 +32,7 @@ describe('Sign-up route', () => {
 
   it('should create new user account', done => {
     sandbox.stub(customerModel, 'findOne').returns(null);
-    sandbox.stub(customerModel, 'create').returns(expectedOneResult);
+    sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
     chai
       .request(app)
       .post('/customers/signup')
@@ -79,7 +70,7 @@ describe('Sign-up route', () => {
   tests to cover user login
    */
   it('should login a user', done => {
-    sandbox.stub(customerModel, 'findOne').returns(expectedOneResult);
+    sandbox.stub(customerModel, 'findOne').returns(mockData.expectedOneResult);
     sandbox.stub(customerModel, 'validatePassword').returns(true);
     chai
       .request(app)
@@ -104,7 +95,7 @@ describe('Sign-up route', () => {
   });
 
   it('should return error if email or password do not match', done => {
-    sandbox.stub(customerModel, 'findOne').returns(expectedOneResult);
+    sandbox.stub(customerModel, 'findOne').returns(mockData.expectedOneResult);
     sandbox.stub(customerModel, 'validatePassword').returns(false);
     chai
       .request(app)
@@ -125,5 +116,38 @@ describe('Sign-up route', () => {
         expect(res).to.have.status(422);
         done();
       });
+  });
+
+  it('should return users details', async () => {
+    sandbox.stub(customerModel, 'findOne').returns(null);
+    sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
+    sandbox.stub(customerModel, 'findByPk').returns(mockData.expectedOneResult);
+    const accessToken = await userSignUp();
+
+    const fetchUserDetails = await chai
+      .request(app)
+      .get('/customer')
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .send();
+
+    expect(fetchUserDetails).to.have.status(200);
+    expect(fetchUserDetails.body).to.have.property('customer');
+  });
+
+  it('should throw an error when something goes wrong while retrieving user details ', async () => {
+    sandbox.stub(customerModel, 'findOne').returns(null);
+    sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
+    sandbox.stub(customerModel, 'findByPk').throws(['Something went wrong']);
+
+    const accessToken = await userSignUp();
+
+    const fetchUserDetails = await chai
+      .request(app)
+      .get('/customer')
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .send();
+
+    expect(fetchUserDetails).to.have.status(500);
+    expect(fetchUserDetails.body).to.have.property('error');
   });
 });

@@ -13,7 +13,6 @@
  *  endpoints, request body/param, and response object for each of these method
  */
 import db from '../database/models';
-import Customer  from '../database/models/customer';
 import { Op } from 'sequelize';
 import { Actions } from '../utils/db-actions';
 import { signToken } from '../utils/jwt';
@@ -117,20 +116,13 @@ class CustomerController {
 
   /**
    * get customer profile data
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status customer profile data
-   * @memberof CustomerController
    */
   static async getCustomerProfile(req, res, next) {
-    // fix the bugs in this code
-    const { customer_id } = req;  // eslint-disable-line
+
+    const { sub } = req.auth;  // eslint-disable-line
     try {
-      const customer = await Customer.findByPk(customer_id);
-      return res.status(400).json({
+      const customer = await db.Customer.findByPk(sub);
+      return res.status(200).json({
         customer,
       });
     } catch (error) {
@@ -199,12 +191,12 @@ class CustomerController {
 
     delete data.dataValues.password;
 
-    const { token, exp } = signToken(data.dataValues.customer_id);
+    const { token, exp, iat } = signToken(data.dataValues.customer_id);
 
     return res.status(statusCode).json({
       customer: data,
       accessToken: token,
-      expiresIn: exp - new Date().getTime()
+      expiresIn: exp - iat
     });
   }
 

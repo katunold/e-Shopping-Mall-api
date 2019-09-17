@@ -1,5 +1,5 @@
 import * as JWT from 'jsonwebtoken';
-// import expressJwt from 'express-jwt';
+import expressJwt from 'express-jwt';
 // eslint-disable-next-line import/prefer-default-export
 export const signToken = userId => {
   const iat = new Date().getTime();
@@ -13,5 +13,11 @@ export const signToken = userId => {
     },
     process.env.JWT_KEY
   );
-  return { token, exp };
+  return { token, exp, iat };
 };
+
+export const requireSignIn = expressJwt({
+  secret: process.env.JWT_KEY,
+  issuer: process.env.JWT_ISSUER,
+  requestProperty: 'auth',
+});
