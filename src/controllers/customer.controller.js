@@ -108,6 +108,14 @@ class CustomerController {
   }
 
   /**
+   * facebook login
+   */
+  static async facebookLogin(req, res) {
+    const { user } = req;
+    return CustomerController.authenticated(user, res, 200);
+  }
+
+  /**
    * get customer profile data
    *
    * @static
