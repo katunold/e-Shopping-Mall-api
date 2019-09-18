@@ -12,27 +12,23 @@
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
-import db from '../database/models';
 import { Op } from 'sequelize';
+import { validationResult } from 'express-validator';
+import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import { signToken } from '../utils/jwt';
-import { validationResult } from 'express-validator';
 import Validations from '../utils/validation';
 
 /**
- *
- *
  * @class CustomerController
  */
 class CustomerController {
-
   static op = Op;
 
   /**
    * create a customer record
    */
   static async create(req, res) {
-
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -42,28 +38,23 @@ class CustomerController {
     const newUser = await db.Customer.findOne({
       where: {
         email: {
-          [CustomerController.op.and]: [req.body.email]
-        }
-      }
+          [CustomerController.op.and]: [req.body.email],
+        },
+      },
     });
-
 
     if (newUser) {
       return res.status(400).send({
         error: {
           status: 400,
-          code: "USR_04",
+          code: 'USR_04',
           message: 'The email already exists.',
-          field: "email"
-        }
-      })
+          field: 'email',
+        },
+      });
     }
 
-    const userData = await Actions.addData(db.Customer, req.body, [
-      "name",
-      "email",
-      "password"
-    ]);
+    const userData = await Actions.addData(db.Customer, req.body, ['name', 'email', 'password']);
     CustomerController.authenticated(userData, res, 201);
   }
 
@@ -72,7 +63,6 @@ class CustomerController {
    */
 
   static async login(req, res) {
-
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -83,19 +73,20 @@ class CustomerController {
 
     const userData = await db.Customer.findOne({
       where: {
-        email: email,
-      }
+        email,
+      },
     });
 
     if (!userData) {
       return res.status(404).send({
         status: 404,
         code: 'USR_05',
-        message: 'The email doesn\'t exist',
-        field: 'email'});
+        message: "The email doesn't exist",
+        field: 'email',
+      });
     }
 
-    if (await db.Customer.validatePassword(password, userData.dataValues.password)){
+    if (await db.Customer.validatePassword(password, userData.dataValues.password)) {
       return CustomerController.authenticated(userData, res, 200);
     }
 
@@ -103,7 +94,8 @@ class CustomerController {
       status: 400,
       code: 'USR_01',
       message: 'Email or Password is invalid.',
-      field: 'email or password'});
+      field: 'email or password',
+    });
   }
 
   /**
@@ -118,8 +110,7 @@ class CustomerController {
    * get customer profile data
    */
   static async getCustomerProfile(req, res, next) {
-
-    const { sub } = req.auth;  // eslint-disable-line
+    const { sub } = req.auth; // eslint-disable-line
     try {
       const customer = await db.Customer.findByPk(sub);
       return res.status(200).json({
@@ -132,17 +123,26 @@ class CustomerController {
 
   /**
    * update customer profile data such as name, email, password, day_phone, eve_phone and mob_phone
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status customer profile data
-   * @memberof CustomerController
    */
   static async updateCustomerProfile(req, res, next) {
-    // Implement function to update customer profile like name, day_phone, eve_phone and mob_phone
-    return res.status(200).json({ message: 'this works' });
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return Validations.errorDisplay(req, res, errors);
+    }
+    try {
+      await db.Customer.update(req.body, {
+        where: {
+          customer_id: req.auth.sub,
+        },
+      });
+      const { customer } = req;
+      const updatedUser = Object.assign(customer, req.body);
+
+      return res.status(200).send(updatedUser);
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
@@ -196,10 +196,9 @@ class CustomerController {
     return res.status(statusCode).json({
       customer: data,
       accessToken: token,
-      expiresIn: exp - iat
+      expiresIn: exp - iat,
     });
-  }
-
+  };
 }
 
 export default CustomerController;

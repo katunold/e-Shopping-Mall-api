@@ -4,6 +4,7 @@
   "rules": {
     "prettier/prettier": ["error"]
   },
+  "parser": "babel-eslint",
   "env": {
     "jest": true
   }
