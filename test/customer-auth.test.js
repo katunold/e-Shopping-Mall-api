@@ -1,7 +1,6 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
 import sinon from 'sinon';
-import { exceptions } from 'winston';
 import app from '../src';
 import mockData from './helpers/mock-data';
 import { userSignUp } from './helpers/test-setup';

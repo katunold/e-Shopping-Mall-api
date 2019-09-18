@@ -51,11 +51,11 @@ app.use('/stripe/charge', express.static(`${__dirname}/public`));
 app.use(router);
 
 // catch 404 and forward to error handler
-app.use((req, res, next) => {
-  const err = new Error('Resource does not exist');
-  err.status = 404;
-  next(err);
-});
+// app.use((req, res, next) => {
+//   const err = new Error('Resource does not exist');
+//   err.status = 404;
+//   next(err);
+// });
 
 if (!isProduction) {
   // eslint-disable-next-line no-unused-vars
