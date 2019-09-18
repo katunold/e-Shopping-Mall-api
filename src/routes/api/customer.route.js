@@ -28,6 +28,13 @@ router.put(
   Validations.validity('update-address'),
   CustomerController.updateCustomerAddress
 );
-router.put('/customer/creditCard', CustomerController.updateCreditCard);
+router.put(
+  '/customer/creditCard',
+  requireSignIn,
+  hasAuthorization,
+  Validations.validateUpdateDetails,
+  Validations.validity('update-credit-card'),
+  CustomerController.updateCreditCard
+);
 
 export default router;
