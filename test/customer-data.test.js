@@ -46,7 +46,7 @@ describe('customer route', () => {
    */
 
   it('should update user details', async () => {
-    const response = await helper(mockData.updateCustomerDetails, false, );
+    const response = await helper(mockData.updateCustomerDetails, false);
     expect(response).to.have.status(200);
   });
 
@@ -74,8 +74,25 @@ describe('customer route', () => {
     expect(response).to.have.status(200);
   });
 
-  it('should throw an error if if invalid data is submitted ', async () => {
+  it('should throw an error if if invalid address data is submitted ', async () => {
     const response = await helper(mockData.faultyUpdateCustomerAddress, false, '/customer/address');
+    expect(response).to.have.status(422);
+  });
+
+  /**
+   * tests to cover updating user credit card
+   */
+  it('should update customer credit card ', async () => {
+    const response = await helper(mockData.updateCustomerCreditCard, false, '/customer/creditCard');
+    expect(response).to.have.status(200);
+  });
+
+  it('should throw an error if invalid credit card data is submitted ', async () => {
+    const response = await helper(
+      mockData.faultyUpdateCustomerCreditCard,
+      false,
+      '/customer/creditCard'
+    );
     expect(response).to.have.status(422);
   });
 });

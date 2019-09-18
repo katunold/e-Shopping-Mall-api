@@ -38,6 +38,10 @@ exports.updateCustomerAddress = {
   country: 'Kenya',
 };
 
+exports.updateCustomerCreditCard = {
+  credit_card: '234r3ysrdtduh7i7y8foghiyaguakt',
+};
+
 exports.faultyUpdateCustomerAddress = {
   country: '***************Kenya**********',
 };
@@ -45,6 +49,10 @@ exports.faultyUpdateCustomerAddress = {
 exports.faultyUpdateCustomerDetails = {
   email: 'arnold',
   name: 'arnold',
+};
+
+exports.faultyUpdateCustomerCreditCard = {
+  credit_card: '234r3ysrdtduh!!!!!!',
 };
 
 exports.unExpectedUpdateCustomerDetailsFields = {

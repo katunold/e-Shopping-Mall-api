@@ -69,6 +69,12 @@ export default class Validations {
             .isNumeric()
             .optional(),
         ];
+      case 'update-credit-card':
+        return [
+          body('credit_card', 'only alphanumeric characters')
+            .isAlphanumeric()
+            .optional(),
+        ];
       default:
         return [
           body('contactNumber', 'Contact number is required')
@@ -84,8 +90,11 @@ export default class Validations {
   };
 
   static validateUpdateDetails = (req, res, next) => {
-    const upDateFields = req.url.includes('address')
-      ? {
+    const { url } = req;
+    let upDateFields;
+    switch (url) {
+      case '/customer/address':
+        upDateFields = {
           address_1: 'address_1',
           address_2: 'address_2',
           city: 'city',
@@ -93,14 +102,22 @@ export default class Validations {
           postal_code: 'postal_code',
           country: 'country',
           shipping_region_id: 'shipping_region_id',
-        }
-      : {
+        };
+        break;
+      case '/customer/creditCard':
+        upDateFields = {
+          credit_card: 'credit_card',
+        };
+        break;
+      default:
+        upDateFields = {
           email: 'email',
           name: 'name',
           day_phone: 'day_phone',
           eve_phone: 'eve_phone',
           mob_phone: 'mob_phone',
         };
+    }
 
     const keys = Object.keys(req.body);
     keys.forEach(key => {
