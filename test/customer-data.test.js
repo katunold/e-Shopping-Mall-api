@@ -25,7 +25,7 @@ describe('customer route', () => {
     sandbox.restore();
   });
 
-  const helper = async (updateData, error) => {
+  const helper = async (updateData, error, route = '/customer') => {
     const sand = sandbox.stub(customerModel, 'findOne').returns(null);
     sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
     error
@@ -36,13 +36,17 @@ describe('customer route', () => {
     sandbox.stub(customerModel, 'findOne').returns(mockData.expectedOneResult);
     return chai
       .request(app)
-      .put('/customer')
+      .put(route)
       .set({ Authorization: `Bearer ${accessToken}` })
       .send(updateData);
   };
 
+  /**
+   * tests to cover updating user details
+   */
+
   it('should update user details', async () => {
-    const response = await helper(mockData.updateCustomerDetails, false);
+    const response = await helper(mockData.updateCustomerDetails, false, );
     expect(response).to.have.status(200);
   });
 
@@ -59,5 +63,19 @@ describe('customer route', () => {
   it('should throw an error if something goes ', async () => {
     const response = await helper(mockData.updateCustomerDetails, true);
     expect(response).to.have.status(500);
+  });
+
+  /**
+   * tests to cover updating user address
+   */
+
+  it('should update customer address ', async () => {
+    const response = await helper(mockData.updateCustomerAddress, false, '/customer/address');
+    expect(response).to.have.status(200);
+  });
+
+  it('should throw an error if if invalid data is submitted ', async () => {
+    const response = await helper(mockData.faultyUpdateCustomerAddress, false, '/customer/address');
+    expect(response).to.have.status(422);
   });
 });

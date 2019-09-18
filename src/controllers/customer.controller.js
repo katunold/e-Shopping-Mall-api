@@ -125,40 +125,25 @@ class CustomerController {
    * update customer profile data such as name, email, password, day_phone, eve_phone and mob_phone
    */
   static async updateCustomerProfile(req, res, next) {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return Validations.errorDisplay(req, res, errors);
     }
-    try {
-      await db.Customer.update(req.body, {
-        where: {
-          customer_id: req.auth.sub,
-        },
-      });
-      const { customer } = req;
-      const updatedUser = Object.assign(customer, req.body);
-
-      return res.status(200).send(updatedUser);
-    } catch (error) {
-      return next(error);
-    }
+    return CustomerController.update(req, res, next);
   }
 
   /**
    * update customer profile data such as address_1, address_2, city, region, postal_code, country and shipping_region_id
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status customer profile data
-   * @memberof CustomerController
    */
   static async updateCustomerAddress(req, res, next) {
     // write code to update customer address info such as address_1, address_2, city, region, postal_code, country
     // and shipping_region_id
-    return res.status(200).json({ message: 'this works' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return Validations.errorDisplay(req, res, errors);
+    }
+
+    return CustomerController.update(req, res, next);
   }
 
   /**
@@ -198,6 +183,22 @@ class CustomerController {
       accessToken: token,
       expiresIn: exp - iat,
     });
+  };
+
+  static update = async (req, res, next) => {
+    try {
+      await db.Customer.update(req.body, {
+        where: {
+          customer_id: req.auth.sub,
+        },
+      });
+      const { customer } = req;
+      const updatedUser = Object.assign(customer, req.body);
+
+      return res.status(200).send(updatedUser);
+    } catch (error) {
+      return next(error);
+    }
   };
 }
 
