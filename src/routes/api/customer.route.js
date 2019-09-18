@@ -20,7 +20,14 @@ router.put(
   Validations.validity('update-user-details'),
   CustomerController.updateCustomerProfile
 );
-router.put('/customer/address', CustomerController.updateCustomerAddress);
+router.put(
+  '/customer/address',
+  requireSignIn,
+  hasAuthorization,
+  Validations.validateUpdateDetails,
+  Validations.validity('update-address'),
+  CustomerController.updateCustomerAddress
+);
 router.put('/customer/creditCard', CustomerController.updateCreditCard);
 
 export default router;

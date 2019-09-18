@@ -34,6 +34,14 @@ exports.updateCustomerDetails = {
   name: 'arnold',
 };
 
+exports.updateCustomerAddress = {
+  country: 'Kenya',
+};
+
+exports.faultyUpdateCustomerAddress = {
+  country: '***************Kenya**********',
+};
+
 exports.faultyUpdateCustomerDetails = {
   email: 'arnold',
   name: 'arnold',
