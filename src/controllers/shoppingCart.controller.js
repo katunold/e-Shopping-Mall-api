@@ -145,18 +145,44 @@ class ShoppingCartController {
   }
 
   /**
-   *
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with customer's orders
-   * @memberof ShoppingCartController
+   * return all orders placed by a specific customer
    */
   static async getCustomerOrders(req, res, next) {
-    const { customer_id } = req;  // eslint-disable-line
+    const { sub } = req.auth;  // eslint-disable-line
+    const data = [];
     try {
-      // implement code to get customer order
+      const orders = await db.Order.findAll({
+        where: {
+          customer_id: sub,
+        },
+        attributes: ['order_id', 'total_amount', 'created_on', 'shipped_on'],
+        include: [{ model: db.Customer, attributes: ['name'] }],
+      });
+      if (orders.length) {
+        console.log(orders.length);
+        orders.forEach(obj => {
+          // eslint-disable-next-line camelcase
+          const { order_id, total_amount, created_on, shipped_on, Customer } = obj;
+          const cleanData = {
+            order_id,
+            total_amount,
+            created_on,
+            shipped_on,
+            name: Customer.name,
+          };
+          data.push(cleanData);
+        });
+
+        return res.status(200).send(data);
+      }
+
+      return res.status(404).send({
+        error: {
+          status: 404,
+          code: 'ORD_01',
+          message: 'orders not found',
+        },
+      });
     } catch (error) {
       return next(error);
     }
