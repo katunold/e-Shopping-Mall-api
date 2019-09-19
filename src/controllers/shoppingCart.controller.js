@@ -19,6 +19,7 @@
  */
 
 import { validationResult } from 'express-validator';
+import uniqid from 'uniqid';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
@@ -31,16 +32,10 @@ import Validations from '../utils/validation';
 class ShoppingCartController {
   /**
    * generate random unique id for cart identifier
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with cart_id
-   * @memberof shoppingCartController
    */
   static generateUniqueCart(req, res) {
     // implement method to generate unique cart Id
-    return res.status(200).json({ message: 'this works' });
+    return res.status(200).send({ cart_id: uniqid() });
   }
 
   /**
