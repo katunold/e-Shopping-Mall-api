@@ -2,7 +2,7 @@
  * Check each method in the shopping cart controller and add code to implement
  * the functionality or fix any bug.
  * The static methods and their function include:
- * 
+ *
  * - generateUniqueCart - To generate a unique cart id
  * - addItemToCart - To add new product to the cart
  * - getCart - method to get list of items in a cart
@@ -13,12 +13,11 @@
  * - getCustomerOrders - get all orders of a customer
  * - getOrderSummary - get the details of an order
  * - processStripePayment - process stripe payment
- * 
+ *
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
 
- 
 import { validationResult } from 'express-validator';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
@@ -164,19 +163,30 @@ class ShoppingCartController {
   }
 
   /**
-   *
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with order summary
-   * @memberof ShoppingCartController
+   * return a single order
    */
   static async getOrderSummary(req, res, next) {
     const { order_id } = req.params;  // eslint-disable-line
-    const { customer_id } = req;   // eslint-disable-line
+    const { sub } = req.auth;
     try {
-      // write code to get order summary
+      const orderResponse = await db.Order.findOne({
+        where: {
+          order_id,
+          customer_id: sub,
+        },
+        attributes: ['order_id'],
+        include: [{ model: db.OrderDetail, as: 'orderItems' }],
+      });
+      return orderResponse
+        ? res.status(200).send(orderResponse)
+        : res.status(404).send({
+            error: {
+              status: 404,
+              code: 'ORD_01',
+              // eslint-disable-next-line camelcase
+              message: `order_id ${order_id} does not exist in your orders`,
+            },
+          });
     } catch (error) {
       return next(error);
     }
