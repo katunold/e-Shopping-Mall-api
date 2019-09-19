@@ -56,6 +56,37 @@ exports.getOrderData = {
   orderItems: [],
 };
 
+exports.getCustomerOrders = [
+  {
+    order_id: 3,
+    total_amount: '0.00',
+    created_on: '2019-09-19T01:59:45.000Z',
+    shipped_on: null,
+    Customer: { name: 'Arnold' },
+  },
+  {
+    order_id: 4,
+    total_amount: '0.00',
+    created_on: '2019-09-19T01:59:45.000Z',
+    shipped_on: null,
+    Customer: { name: 'Arnold' },
+  },
+  {
+    order_id: 4,
+    total_amount: '0.00',
+    created_on: '2019-09-19T01:59:45.000Z',
+    shipped_on: null,
+    Customer: { name: 'Arnold' },
+  },
+  {
+    order_id: 5,
+    total_amount: '0.00',
+    created_on: '2019-09-19T01:59:45.000Z',
+    shipped_on: null,
+    Customer: { name: 'Arnold' },
+  },
+];
+
 exports.updateCustomerDetails = {
   email: 'arnold@gmail.com',
   name: 'arnold',

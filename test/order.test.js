@@ -16,25 +16,26 @@ const customerModel = db.Customer;
 
 describe('Order route', () => {
   let sandbox;
+  let accessToken;
 
-  beforeEach(done => {
+  beforeEach(async () => {
     sandbox = sinon.createSandbox();
-    done();
+    sandbox.stub(customerModel, 'findOne').returns(null);
+    sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
+    accessToken = await userSignUp();
   });
 
   afterEach('restore sandbox', () => {
     sandbox.restore();
   });
 
-  const postHelper = async (order, error = false) => {
-    sandbox.stub(customerModel, 'findOne').returns(null);
-    sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
+  const postOrderHelper = async (order, error = false) => {
     // eslint-disable-next-line no-unused-expressions
     error
       ? sandbox.stub(orderModel, 'create').throws(['Something went wrong'])
       : sandbox.stub(orderModel, 'create').returns(mockData.orderCreated);
     sandbox.stub(orderModel, 'update').returns(true);
-    const accessToken = await userSignUp();
+
     return chai
       .request(app)
       .post('/orders')
@@ -42,19 +43,15 @@ describe('Order route', () => {
       .send(order);
   };
 
-  const getHelper = async (data, error = false) => {
-    sandbox.stub(customerModel, 'findOne').returns(null);
-    sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
+  const getOrderHelper = async (data, stubMethod, route, error = false) => {
     // eslint-disable-next-line no-unused-expressions
     error
-      ? sandbox.stub(orderModel, 'findOne').throws(['something went wrong'])
-      : sandbox.stub(orderModel, 'findOne').returns(data);
-
-    const accessToken = await userSignUp();
+      ? sandbox.stub(orderModel, stubMethod).throws(['something went wrong'])
+      : sandbox.stub(orderModel, stubMethod).returns(data);
 
     return chai
       .request(app)
-      .get('/orders/4')
+      .get(route)
       .set({ Authorization: `Bearer ${accessToken}` })
       .send();
   };
@@ -64,17 +61,17 @@ describe('Order route', () => {
    */
 
   it('should create a new order', async () => {
-    const response = await postHelper(mockData.createOrderData);
+    const response = await postOrderHelper(mockData.createOrderData);
     expect(response).to.have.status(201);
   });
 
   it('should return an error when invalid data is submitted', async () => {
-    const response = await postHelper(mockData.faultyCreateOrderData);
+    const response = await postOrderHelper(mockData.faultyCreateOrderData);
     expect(response).to.have.status(422);
   });
 
   it('should throw error in-case something goes wrong while creating order', async () => {
-    const response = await postHelper(mockData.createOrderData, true);
+    const response = await postOrderHelper(mockData.createOrderData, true);
     expect(response).to.have.status(500);
   });
 
@@ -82,18 +79,45 @@ describe('Order route', () => {
    *  tests to cover fetching a specific order
    */
   it('should return a specific order', async () => {
-    const response = await getHelper(mockData.getOrderData);
+    const response = await getOrderHelper(mockData.getOrderData, 'findOne', '/orders/4');
     expect(response).to.have.status(200);
     expect(response.body).to.have.property('order_id');
   });
 
   it('should return a 404 if order does not exist', async () => {
-    const response = await getHelper(null);
+    const response = await getOrderHelper(null, 'findOne', '/orders/4');
     expect(response).to.have.status(404);
   });
 
   it('should throw an error in the process of getting an order', async () => {
-    const response = await getHelper(mockData.getOrderData, true);
+    const response = await getOrderHelper(mockData.getOrderData, 'findOne', '/orders/4', true);
+    expect(response).to.have.status(500);
+  });
+
+  /**
+   *  tests to cover fetching orders from a specific customer
+   */
+  it('should return all orders from a specific client', async () => {
+    const response = await getOrderHelper(
+      mockData.getCustomerOrders,
+      'findAll',
+      '/orders/inCustomer'
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if no orders are found', async () => {
+    const response = await getOrderHelper([], 'findAll', '/orders/inCustomer');
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error if something goes wrong while fetching orders', async () => {
+    const response = await getOrderHelper(
+      mockData.getCustomerOrders,
+      'findAll',
+      '/orders/inCustomer',
+      true
+    );
     expect(response).to.have.status(500);
   });
 });

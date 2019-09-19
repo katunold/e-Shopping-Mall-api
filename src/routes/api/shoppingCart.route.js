@@ -11,7 +11,7 @@ router.put('/shoppingcart/update/:item_id', ShoppingCartController.updateCartIte
 router.delete('/shoppingcart/empty/:cart_id', ShoppingCartController.emptyCart);
 router.delete('/shoppingcart/removeProduct/:item_id', ShoppingCartController.removeItemFromCart);
 router.post('/orders', requireSignIn, Validations.validity(), ShoppingCartController.createOrder);
-router.get('/orders/inCustomer', ShoppingCartController.getCustomerOrders);
+router.get('/orders/inCustomer', requireSignIn, ShoppingCartController.getCustomerOrders);
 router.get('/orders/:order_id', requireSignIn, ShoppingCartController.getOrderSummary);
 router.post('/stripe/charge', ShoppingCartController.processStripePayment);
 
