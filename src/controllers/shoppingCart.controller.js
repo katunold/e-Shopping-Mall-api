@@ -11,7 +11,7 @@
  * - removeItemFromCart - should delete a product from the shopping cart
  * - createOrder - Create an order
  * - getCustomerOrders - get all orders of a customer
- * - getOrderSummary - get the details of an order
+ * - getOrder - get the details of an order
  * - processStripePayment - process stripe payment
  *
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
@@ -159,7 +159,6 @@ class ShoppingCartController {
         include: [{ model: db.Customer, attributes: ['name'] }],
       });
       if (orders.length) {
-        console.log(orders.length);
         orders.forEach(obj => {
           // eslint-disable-next-line camelcase
           const { order_id, total_amount, created_on, shipped_on, Customer } = obj;
@@ -191,7 +190,7 @@ class ShoppingCartController {
   /**
    * return a single order
    */
-  static async getOrderSummary(req, res, next) {
+  static async getOrder(req, res, next) {
     const { order_id } = req.params;  // eslint-disable-line
     const { sub } = req.auth;
     try {
@@ -213,6 +212,44 @@ class ShoppingCartController {
               message: `order_id ${order_id} does not exist in your orders`,
             },
           });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  static async getOrderSummary(req, res, next) {
+    let cleanData;
+    const { order_id } = req.params;  // eslint-disable-line
+    const { sub } = req.auth;
+    try {
+      const orderResponse = await db.Order.findOne({
+        where: {
+          order_id,
+          customer_id: sub,
+        },
+        attributes: ['order_id', 'total_amount', 'created_on', 'shipped_on', 'status'],
+        include: [{ model: db.Customer, attributes: ['name'] }],
+      });
+      if (orderResponse) {
+        // eslint-disable-next-line camelcase,no-shadow
+        const { order_id, total_amount, created_on, shipped_on, Customer } = orderResponse;
+        cleanData = {
+          order_id,
+          total_amount,
+          created_on,
+          shipped_on,
+          name: Customer.name,
+        };
+        return res.status(200).send(cleanData);
+      }
+
+      return res.status(404).send({
+        error: {
+          status: 404,
+          code: 'ORD_01',
+          message: 'order not found',
+        },
+      });
     } catch (error) {
       return next(error);
     }
