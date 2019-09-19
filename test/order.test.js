@@ -120,4 +120,37 @@ describe('Order route', () => {
     );
     expect(response).to.have.status(500);
   });
+
+  /**
+   *  tests to cover fetching an order summary
+   */
+  it('should return a single order summary', async () => {
+    const response = await getOrderHelper(
+      mockData.getCustomerOrders[2],
+      'findOne',
+      '/orders/shortDetail/4'
+    );
+    expect(response).to.have.status(200);
+    expect(response.body).to.have.property('order_id');
+  });
+
+  it('should return 404 if order not found', async () => {
+    const response = await getOrderHelper(
+      mockData.getCustomerOrders[10],
+      'findOne',
+      '/orders/shortDetail/10'
+    );
+    expect(response).to.have.status(404);
+    expect(response.body).to.have.property('error');
+  });
+
+  it('should throw an error if something goes wrong while fetching the order summary', async () => {
+    const response = await getOrderHelper(
+      mockData.getCustomerOrders[2],
+      'findOne',
+      '/orders/shortDetail/4',
+      true
+    );
+    expect(response).to.have.status(500);
+  });
 });
