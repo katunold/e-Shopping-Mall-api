@@ -19,6 +19,11 @@
  */
 
  
+import { validationResult } from 'express-validator';
+import db from '../database/models';
+import { Actions } from '../utils/db-actions';
+import Validations from '../utils/validation';
+
 /**
  *
  *
@@ -106,7 +111,6 @@ class ShoppingCartController {
    * @memberof ShoppingCartController
    */
   static async removeItemFromCart(req, res, next) {
-
     try {
       // implement code to remove item from cart here
     } catch (error) {
@@ -116,16 +120,26 @@ class ShoppingCartController {
 
   /**
    * create an order from a cart
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with created order
-   * @memberof ShoppingCartController
    */
   static async createOrder(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return Validations.errorDisplay(req, res, errors);
+    }
+
+    const { sub } = req.auth;
+    const customer = {
+      customer_id: sub,
+    };
+    Object.assign(req.body, customer);
     try {
-      // implement code for creating order here
+      const orderData = await Actions.addData(db.Order, req.body, [
+        'cart_id',
+        'shipping_id',
+        'tax_id',
+        'customer_id',
+      ]);
+      return res.status(201).send({ order_id: orderData.order_id });
     } catch (error) {
       return next(error);
     }

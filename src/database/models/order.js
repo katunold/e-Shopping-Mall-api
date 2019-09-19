@@ -31,7 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       tax_id: DataTypes.INTEGER,
     },
     {
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'created_on',
+      updatedAt: false,
       tableName: 'orders',
     }
   );

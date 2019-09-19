@@ -19,6 +19,7 @@ if (config.use_env_variable) {
 
 const db = {
   Customer: sequelize.import('./customer'),
+  Order: sequelize.import('./order'),
 };
 
 fs.readdirSync(__dirname)
