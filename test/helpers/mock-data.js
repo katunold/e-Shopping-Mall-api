@@ -51,6 +51,11 @@ exports.orderCreated = {
   customer_id: 26,
 };
 
+exports.getOrderData = {
+  order_id: 6,
+  orderItems: [],
+};
+
 exports.updateCustomerDetails = {
   email: 'arnold@gmail.com',
   name: 'arnold',
