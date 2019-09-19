@@ -77,11 +77,26 @@ export default class Validations {
         ];
       default:
         return [
-          body('contactNumber', 'Contact number is required')
+          body('cart_id', 'cart_id is required')
+            .trim()
             .exists()
             .not()
             .isEmpty(),
-          body('password', 'Password is required')
+          body('cart_id', 'only alphanumeric characters')
+            .trim()
+            .isAlphanumeric(),
+          body('shipping_id', 'shipping_id is required')
+            .trim()
+            .exists()
+            .not()
+            .isEmpty(),
+          body('shipping_id', 'only numeric characters')
+            .trim()
+            .isNumeric(),
+          body('tax_id', 'only numeric characters')
+            .trim()
+            .isNumeric(),
+          body('tax_id', 'tax_id is required')
             .exists()
             .not()
             .isEmpty(),

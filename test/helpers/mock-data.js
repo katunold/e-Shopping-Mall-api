@@ -29,6 +29,28 @@ exports.expectedOneResult = {
   },
 };
 
+exports.createOrderData = {
+  cart_id: '2',
+  shipping_id: 1,
+  tax_id: 1,
+};
+
+exports.faultyCreateOrderData = {
+  cart_id: '2',
+  shipping_id: '1qw',
+  tax_id: 1,
+};
+
+exports.orderCreated = {
+  created_on: '2019-09-19T02:35:26.703Z',
+  total_amount: 0,
+  status: 0,
+  order_id: 6,
+  shipping_id: '1',
+  tax_id: '1',
+  customer_id: 26,
+};
+
 exports.updateCustomerDetails = {
   email: 'arnold@gmail.com',
   name: 'arnold',
