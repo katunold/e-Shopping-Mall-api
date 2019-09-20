@@ -20,6 +20,7 @@
 
 import { validationResult } from 'express-validator';
 import uniqid from 'uniqid';
+import { error } from 'winston';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
@@ -117,16 +118,35 @@ class ShoppingCartController {
 
   /**
    * update cart item quantity using the item_id in the request param
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with cart
-   * @memberof ShoppingCartController
    */
   static async updateCartItem(req, res, next) {
-    const { item_id } = req.params; // eslint-disable-line
-    return res.status(200).json({ message: 'this works' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return Validations.errorDisplay(req, res, errors);
+    }
+    try {
+      const { params, body } = req; // eslint-disable-line
+      const cart = await db.ShoppingCart.findByPk(params.item_id);
+      if (cart) {
+        cart.dataValues.quantity = body.quantity;
+        await db.ShoppingCart.update(body, {
+          where: {
+            item_id: params.item_id,
+          },
+        });
+        return res.status(200).json(cart);
+      }
+      return res.status(404).send({
+        error: {
+          status: 404,
+          code: 'SPC_1',
+          message: `Product with id ${params.item_id} not found`,
+        },
+      });
+      // eslint-disable-next-line no-shadow
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**

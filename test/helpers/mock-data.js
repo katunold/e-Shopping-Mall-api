@@ -175,6 +175,23 @@ exports.addProductToShoppingCart = {
   quantity: 10,
 };
 
+exports.updateProductResponse = {
+  dataValues: {
+    cart_id: 'c1y4i017ixk0quiosn',
+    product_id: 1,
+    attributes: 'Small',
+    quantity: 10,
+  },
+};
+
+exports.updateProductQuantity = {
+  quantity: 15,
+};
+
+exports.faultyUpdateProductQuantity = {
+  quantity: 'yfuakbcam',
+};
+
 exports.faultyAddProductToShoppingCart = {
   cart_id: '',
   product_id: 1,

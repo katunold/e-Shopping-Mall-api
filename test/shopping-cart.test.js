@@ -9,7 +9,6 @@ const shoppingCartModel = db.ShoppingCart;
 
 describe('Shopping-cart route', () => {
   let sandbox;
-  let myStub;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -31,14 +30,28 @@ describe('Shopping-cart route', () => {
   };
 
   const getProductHelper = async (data, error = false) => {
-    myStub = error
-      ? sinon.stub(shoppingCartModel, 'findAll').throws(['something went wrong'])
-      : sinon.stub(shoppingCartModel, 'findAll').returns(data);
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandbox.stub(shoppingCartModel, 'findAll').throws(['something went wrong'])
+      : sandbox.stub(shoppingCartModel, 'findAll').returns(data);
 
     return chai
       .request(app)
       .get('/shoppingcart/c1y4i017ixk0quiosn')
       .send();
+  };
+
+  // eslint-disable-next-line camelcase
+  const upDateProductQuantityHelper = async (db_data, req_data, error=false) => {
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandbox.stub(shoppingCartModel, 'findByPk').throws(['Something went wrong'])
+      : sandbox.stub(shoppingCartModel, 'findByPk').returns(db_data);
+    sandbox.stub(shoppingCartModel, 'update').returns(true);
+    return chai
+      .request(app)
+      .put('/shoppingcart/update/1')
+      .send(req_data);
   };
 
   /**
@@ -85,14 +98,45 @@ describe('Shopping-cart route', () => {
   });
 
   it('should return 404 if the shopping cart does-not exist', async () => {
-    myStub.restore();
     const response = await getProductHelper([]);
     expect(response).to.have.status(404);
   });
 
   it('should throw an error when something goes wrong', async () => {
-    myStub.restore();
     const response = await getProductHelper(mockData.getShoppingCartProducts, true);
+    expect(response).to.have.status(500);
+  });
+
+  /**
+   * tests to cover updating the quantity of a product in the shopping cart
+   */
+  it('should update the quantity of a product in a given shopping cart', async () => {
+    const response = await upDateProductQuantityHelper(
+      mockData.updateProductResponse,
+      mockData.updateProductQuantity
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if product does not exist', async () => {
+    const response = await upDateProductQuantityHelper(null, mockData.updateProductQuantity);
+    expect(response).to.have.status(404);
+  });
+
+  it('should return an error if invalid data is submitted', async () => {
+    const response = await upDateProductQuantityHelper(
+      mockData.updateProductResponse,
+      mockData.faultyUpdateProductQuantity
+    );
+    expect(response).to.have.status(422);
+  });
+
+  it('should throw an error in case something goes wrong', async () => {
+    const response = await upDateProductQuantityHelper(
+      mockData.updateProductResponse,
+      mockData.updateProductQuantity,
+      true
+    );
     expect(response).to.have.status(500);
   });
 });

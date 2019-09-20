@@ -11,7 +11,12 @@ router.post(
   ShoppingCartController.addItemToCart
 );
 router.get('/shoppingcart/:cart_id', ShoppingCartController.getCart);
-router.put('/shoppingcart/update/:item_id', ShoppingCartController.updateCartItem);
+router.put(
+  '/shoppingcart/update/:item_id',
+  Validations.validateUpdateDetails,
+  Validations.validity('update-product-quantity'),
+  ShoppingCartController.updateCartItem
+);
 router.delete('/shoppingcart/empty/:cart_id', ShoppingCartController.emptyCart);
 router.delete('/shoppingcart/removeProduct/:item_id', ShoppingCartController.removeItemFromCart);
 router.post('/orders', requireSignIn, Validations.validity(), ShoppingCartController.createOrder);
