@@ -129,6 +129,45 @@ exports.addToCartResponse = {
   },
 };
 
+exports.getShoppingCartProducts = [
+  {
+    item_id: 1,
+    cart_id: 'c1y4i017ixk0quiosn',
+    product_id: 1,
+    quantity: 10,
+    Product: {
+      name: "Arc d'Triomphe",
+      image: 'arc-d-triomphe.gif',
+      price: '14.99',
+      discounted_price: '0.00',
+    },
+  },
+  {
+    item_id: 1,
+    cart_id: 'c1y4i017ixk0quiosn',
+    product_id: 1,
+    quantity: 10,
+    Product: {
+      name: "Arc d'Triomphe",
+      image: 'arc-d-triomphe.gif',
+      price: '14.99',
+      discounted_price: '0.00',
+    },
+  },
+  {
+    item_id: 1,
+    cart_id: 'c1y4i017ixk0quiosn',
+    product_id: 1,
+    quantity: 10,
+    Product: {
+      name: "Arc d'Triomphe",
+      image: 'arc-d-triomphe.gif',
+      price: '14.99',
+      discounted_price: '0.00',
+    },
+  },
+];
+
 exports.addProductToShoppingCart = {
   cart_id: 'c1y4i017ixk0quiosn',
   product_id: 1,
