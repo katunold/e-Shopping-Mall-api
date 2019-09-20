@@ -76,6 +76,17 @@ export default class Validations {
             .isAlphanumeric()
             .optional(),
         ];
+      case 'update-product-quantity':
+        return [
+          body('quantity', 'only numeric values allowed')
+            .trim()
+            .isNumeric(),
+          body('quantity', 'quantity is required')
+            .trim()
+            .exists()
+            .not()
+            .isEmpty(),
+        ];
       case 'add-to-cart':
         return [
           body('cart_id', 'only alphanumeric characters')
@@ -160,13 +171,18 @@ export default class Validations {
           credit_card: 'credit_card',
         };
         break;
-      default:
+      case '/customer':
         upDateFields = {
           email: 'email',
           name: 'name',
           day_phone: 'day_phone',
           eve_phone: 'eve_phone',
           mob_phone: 'mob_phone',
+        };
+        break;
+      default:
+        upDateFields = {
+          quantity: 'quantity',
         };
     }
 
