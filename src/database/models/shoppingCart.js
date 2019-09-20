@@ -29,14 +29,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: true,
       },
-      added_on: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-      },
     },
     {
-      timestamps: false,
+      timestamps: true,
+      createdAt: 'added_on',
+      updatedAt: false,
       tableName: 'shopping_cart',
     }
   );
