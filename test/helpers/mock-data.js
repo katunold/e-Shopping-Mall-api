@@ -56,7 +56,6 @@ exports.getOrderData = {
   orderItems: [],
 };
 
-
 exports.getCustomerOrders = [
   {
     order_id: 3,
@@ -116,6 +115,32 @@ exports.faultyUpdateCustomerCreditCard = {
 
 exports.unExpectedUpdateCustomerDetailsFields = {
   country: 'Uganda',
+};
+
+exports.addToCartResponse = {
+  cart: {
+    buy_now: true,
+    item_id: 3,
+    cart_id: 'c1y4i017ixk0quiosn',
+    product_id: '1',
+    attributes: 'Small',
+    quantity: '10',
+    added_on: '2019-09-20T02:02:12.680Z',
+  },
+};
+
+exports.addProductToShoppingCart = {
+  cart_id: 'c1y4i017ixk0quiosn',
+  product_id: 1,
+  attributes: 'Small',
+  quantity: 10,
+};
+
+exports.faultyAddProductToShoppingCart = {
+  cart_id: '',
+  product_id: 1,
+  attributes: 'Small',
+  quantity: 10,
 };
 
 exports.customer = {

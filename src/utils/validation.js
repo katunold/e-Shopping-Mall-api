@@ -72,8 +72,44 @@ export default class Validations {
       case 'update-credit-card':
         return [
           body('credit_card', 'only alphanumeric characters')
+            .trim()
             .isAlphanumeric()
             .optional(),
+        ];
+      case 'add-to-cart':
+        return [
+          body('cart_id', 'only alphanumeric characters')
+            .trim()
+            .isAlphanumeric(),
+          body('product_id', 'only numeric characters')
+            .trim()
+            .isNumeric(),
+          body('attributes', 'only alphanumeric characters')
+            .trim()
+            .isAlphanumeric(),
+          body('quantity', 'only numeric characters')
+            .trim()
+            .isNumeric(),
+          body('cart_id', 'cart_id is required')
+            .trim()
+            .exists()
+            .not()
+            .isEmpty(),
+          body('product_id', 'product_id is required')
+            .trim()
+            .exists()
+            .not()
+            .isEmpty(),
+          body('attributes', 'attributes is required')
+            .trim()
+            .exists()
+            .not()
+            .isEmpty(),
+          body('quantity', 'quantity is required')
+            .trim()
+            .exists()
+            .not()
+            .isEmpty(),
         ];
       default:
         return [
