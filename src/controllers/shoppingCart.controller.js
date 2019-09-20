@@ -42,7 +42,6 @@ class ShoppingCartController {
    * adds item to a cart with cart_id
    */
   static async addItemToCart(req, res, next) {
-    // implement function to add item to cart
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return Validations.errorDisplay(req, res, errors);
