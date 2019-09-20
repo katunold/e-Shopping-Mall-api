@@ -22,7 +22,6 @@ const db = {
   Order: sequelize.import('./order'),
   Product: sequelize.import('./product'),
   OrderDetail: sequelize.import('./orderDetail'),
-  ShoppingCart: sequelize.import('./shoppingCart'),
 };
 
 fs.readdirSync(__dirname)

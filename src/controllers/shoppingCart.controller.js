@@ -40,25 +40,16 @@ class ShoppingCartController {
 
   /**
    * adds item to a cart with cart_id
+   *
+   * @static
+   * @param {obj} req express request object
+   * @param {obj} res express response object
+   * @returns {json} returns json response with cart
+   * @memberof ShoppingCartController
    */
   static async addItemToCart(req, res, next) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return Validations.errorDisplay(req, res, errors);
-    }
-
-    try {
-      const cart = await Actions.addData(db.ShoppingCart, req.body, [
-        'cart_id',
-        'product_id',
-        'attributes',
-        'quantity',
-      ]);
-
-      return res.status(201).send({ cart });
-    } catch (error) {
-      return next(error);
-    }
+    // implement function to add item to cart
+    return res.status(200).json({ message: 'this works' });
   }
 
   /**
