@@ -5,11 +5,7 @@ import Validations from '../../utils/validation';
 
 const router = Router();
 router.get('/shoppingcart/generateUniqueId', ShoppingCartController.generateUniqueCart);
-router.post(
-  '/shoppingcart/add',
-  Validations.validity('add-to-cart'),
-  ShoppingCartController.addItemToCart
-);
+router.post('/shoppingcart/add', ShoppingCartController.addItemToCart);
 router.get('/shoppingcart/:cart_id', ShoppingCartController.getCart);
 router.put('/shoppingcart/update/:item_id', ShoppingCartController.updateCartItem);
 router.delete('/shoppingcart/empty/:cart_id', ShoppingCartController.emptyCart);
