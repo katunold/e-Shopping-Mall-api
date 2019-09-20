@@ -9,6 +9,7 @@ const shoppingCartModel = db.ShoppingCart;
 
 describe('Shopping-cart route', () => {
   let sandbox;
+  let myStub;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -29,6 +30,21 @@ describe('Shopping-cart route', () => {
       .send(data);
   };
 
+  const getProductHelper = async (data, error = false) => {
+    myStub = error
+      ? sinon.stub(shoppingCartModel, 'findAll').throws(['something went wrong'])
+      : sinon.stub(shoppingCartModel, 'findAll').returns(data);
+
+    return chai
+      .request(app)
+      .get('/shoppingcart/c1y4i017ixk0quiosn')
+      .send();
+  };
+
+  /**
+   * tests to cover generating a unique cart id
+   */
+
   it('should return a generate unique cart id', async () => {
     const response = await chai
       .request(app)
@@ -38,6 +54,10 @@ describe('Shopping-cart route', () => {
     expect(response).to.have.status(200);
     expect(response.body).to.have.property('cart_id');
   });
+
+  /**
+   * tests to cover adding a product to a shopping cart
+   */
 
   it('should add a product to a shopping cart', async () => {
     const response = await addProductHelper(mockData.addProductToShoppingCart);
@@ -53,6 +73,26 @@ describe('Shopping-cart route', () => {
 
   it('should throw an error in case something goes wrong while adding a product to the cart', async () => {
     const response = await addProductHelper(mockData.addProductToShoppingCart, true);
+    expect(response).to.have.status(500);
+  });
+
+  /**
+   * tests to cover fetching products in a shopping cart
+   */
+  it('should return all products in a shopping cart', async () => {
+    const response = await getProductHelper(mockData.getShoppingCartProducts);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if the shopping cart does-not exist', async () => {
+    myStub.restore();
+    const response = await getProductHelper([]);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error when something goes wrong', async () => {
+    myStub.restore();
+    const response = await getProductHelper(mockData.getShoppingCartProducts, true);
     expect(response).to.have.status(500);
   });
 });

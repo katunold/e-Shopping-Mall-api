@@ -63,16 +63,56 @@ class ShoppingCartController {
 
   /**
    * get shopping cart using the cart_id
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with cart
-   * @memberof ShoppingCartController
    */
   static async getCart(req, res, next) {
-    // implement method to get cart items
-    return res.status(200).json({ message: 'this works' });
+    const {cart_id} = req.params;  // eslint-disable-line
+    const data = [];
+    try {
+      const response = await db.ShoppingCart.findAll({
+        where: {
+          cart_id,
+        },
+        attributes: ['item_id', 'cart_id', 'product_id', 'quantity'],
+        include: [
+          {
+            model: db.Product,
+            foreignKey: 'product_id',
+            attributes: ['name', 'image', 'price', 'discounted_price'],
+          },
+        ],
+      });
+
+      if (response.length) {
+        response.forEach(obj => {
+          // eslint-disable-next-line camelcase,no-shadow
+          const { item_id, cart_id, product_id, quantity, Product } = obj;
+          const cleanData = {
+            item_id,
+            cart_id,
+            product_id,
+            quantity,
+            name: Product.name,
+            image: Product.image,
+            price: Product.price,
+            discounted_price: Product.discounted_price,
+            sub_total: (Product.price - Product.discounted_price) * quantity,
+          };
+          data.push(cleanData);
+        });
+
+        return res.status(200).send(data);
+      }
+
+      return res.status(404).send({
+        error: {
+          status: 404,
+          // eslint-disable-next-line camelcase
+          message: `shopping cart with id ${cart_id} does-not exists`,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
@@ -85,7 +125,7 @@ class ShoppingCartController {
    * @memberof ShoppingCartController
    */
   static async updateCartItem(req, res, next) {
-    const { item_id } = req.params // eslint-disable-line
+    const { item_id } = req.params; // eslint-disable-line
     return res.status(200).json({ message: 'this works' });
   }
 
