@@ -23,6 +23,8 @@ const db = {
   Product: sequelize.import('./product'),
   OrderDetail: sequelize.import('./orderDetail'),
   ShoppingCart: sequelize.import('./shoppingCart'),
+  ShippingRegion: sequelize.import('./shippingRegion'),
+  Shipping: sequelize.import('./shipping'),
 };
 
 fs.readdirSync(__dirname)
