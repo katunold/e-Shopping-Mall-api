@@ -6,7 +6,7 @@
  * - getShippingType - Returns a list of shipping type in a specific shipping region
  *
  */
-import { ShippingRegion, Shipping } from '../database/models';
+import db from '../database/models';
 
 class ShippingController {
   /**
@@ -21,7 +21,7 @@ class ShippingController {
    */
   static async getShippingRegions(req, res, next) {
     try {
-      const shippingRegions = await ShippingRegion.findAll();
+      const shippingRegions = await db.ShippingRegion.findAll();
       return res.status(200).json({
         shippingRegions,
       });
@@ -32,24 +32,17 @@ class ShippingController {
 
   /**
    * get get shipping region shipping types
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and shipping types data
-   * @memberof ShippingController
    */
   static async getShippingType(req, res, next) {
     const { shipping_region_id } = req.params; // eslint-disable-line
     try {
-      const shippingTypes = await Shipping.findAll({
+      const shippingTypes = await db.Shipping.findAll({
         where: {
           shipping_region_id,
         },
       });
 
-      return res.status(200).json({
+      return res.status(200).send({
         shippingTypes,
       });
     } catch (error) {
