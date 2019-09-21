@@ -42,7 +42,7 @@ describe('Shopping-cart route', () => {
   };
 
   // eslint-disable-next-line camelcase
-  const upDateProductQuantityHelper = async (db_data, req_data, error=false) => {
+  const upDateProductQuantityHelper = async (db_data, req_data, error = false) => {
     // eslint-disable-next-line no-unused-expressions
     error
       ? sandbox.stub(shoppingCartModel, 'findByPk').throws(['Something went wrong'])
@@ -52,6 +52,17 @@ describe('Shopping-cart route', () => {
       .request(app)
       .put('/shoppingcart/update/1')
       .send(req_data);
+  };
+
+  const deleteProductsHelper = async (deleted, error=false) => {
+    error
+      ? sandbox.stub(shoppingCartModel, 'destroy').throws(['something went wrong'])
+      : sandbox.stub(shoppingCartModel, 'destroy').returns(deleted);
+
+    return chai
+      .request(app)
+      .delete('/shoppingcart/empty/werefqwerefr')
+      .send();
   };
 
   /**
@@ -137,6 +148,24 @@ describe('Shopping-cart route', () => {
       mockData.updateProductQuantity,
       true
     );
+    expect(response).to.have.status(500);
+  });
+
+  /**
+   *  tests to cover deleting items in a given shopping cart
+   */
+  it('should delete all products in a given shopping cart', async () => {
+    const response = await deleteProductsHelper(true);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return an error in case there are no products to delete', async () => {
+    const response = await deleteProductsHelper(false);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error if something wrong during the deletion process', async () => {
+    const response = await deleteProductsHelper(true, true);
     expect(response).to.have.status(500);
   });
 });

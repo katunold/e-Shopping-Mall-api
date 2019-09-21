@@ -151,16 +151,29 @@ class ShoppingCartController {
 
   /**
    * removes all items in a cart
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with cart
-   * @memberof ShoppingCartController
    */
   static async emptyCart(req, res, next) {
-    // implement method to empty cart
-    return res.status(200).json({ message: 'this works' });
+    // eslint-disable-next-line camelcase
+    const { cart_id } = req.params;
+    try {
+      const response = await db.ShoppingCart.destroy({
+        where: {
+          cart_id,
+        },
+      });
+      return response
+        ? res.status(200).send([])
+        : res.status(404).send({
+            error: {
+              status: 404,
+              code: 'SPC_01',
+              // eslint-disable-next-line camelcase
+              message: `No products to delete in shopping cart ${cart_id}`,
+            },
+          });
+    } catch (e) {
+      return next(e);
+    }
   }
 
   /**
