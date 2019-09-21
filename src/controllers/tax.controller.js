@@ -22,14 +22,29 @@ class TaxController {
 
   /**
    * This method gets a single tax using the tax id
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getSingleTax(req, res, next) {
-    
-    // Write code to get a single tax using the tax Id provided in the request param
-    return res.status(200).json({ message: 'this works' });
+    // eslint-disable-next-line camelcase
+    const { tax_id } = req.params;
+    try {
+      const response = await db.Tax.findOne({
+        where: {
+          tax_id,
+        },
+      });
+      return response
+        ? res.status(200).send(response)
+        : res.status(404).send({
+            error: {
+              status: 404,
+              code: 'SHP_01',
+              // eslint-disable-next-line camelcase
+              message: `Tax with tax_id ${tax_id} not found`,
+            },
+          });
+    } catch (error) {
+      return next(error);
+    }
   }
 }
 
