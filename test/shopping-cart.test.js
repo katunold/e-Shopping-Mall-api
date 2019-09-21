@@ -54,7 +54,7 @@ describe('Shopping-cart route', () => {
       .send(req_data);
   };
 
-  const deleteProductsHelper = async (deleted, error=false) => {
+  const deleteProductsHelper = async (deleted, error = false) => {
     error
       ? sandbox.stub(shoppingCartModel, 'destroy').throws(['something went wrong'])
       : sandbox.stub(shoppingCartModel, 'destroy').returns(deleted);
@@ -62,6 +62,19 @@ describe('Shopping-cart route', () => {
     return chai
       .request(app)
       .delete('/shoppingcart/empty/werefqwerefr')
+      .send();
+  };
+
+  const deleteProductHelper = async (db_resp = true, error = false) => {
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandbox.stub(shoppingCartModel, 'destroy').throws(['Something went wrong'])
+      : sandbox.stub(shoppingCartModel, 'destroy').returns(db_resp);
+
+    return chai
+      .request(app)
+      .delete('/shoppingcart/removeProduct/45')
+      .set({ cart_id: 'c1y4i017ixk0quiosn' })
       .send();
   };
 
@@ -166,6 +179,24 @@ describe('Shopping-cart route', () => {
 
   it('should throw an error if something wrong during the deletion process', async () => {
     const response = await deleteProductsHelper(true, true);
+    expect(response).to.have.status(500);
+  });
+
+  /**
+   * tests to cover deleting a single item in a given shopping cart
+   */
+  it('should delete a specific item from a shopping cart', async () => {
+    const response = await deleteProductHelper();
+    expect(response).to.have.status(200);
+  });
+
+  it('should return an error if product is not found', async () => {
+    const response = await deleteProductHelper(false);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error in case something while deleting a given product', async () => {
+    const response = await deleteProductHelper(true, true);
     expect(response).to.have.status(500);
   });
 });
