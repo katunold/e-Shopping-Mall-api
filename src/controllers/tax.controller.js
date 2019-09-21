@@ -1,21 +1,23 @@
-
 /**
  * Tax controller contains methods which are needed for all tax request
  * Implement the functionality for the methods
- * 
+ *
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
+import db from '../database/models';
+
 class TaxController {
   /**
    * This method get all taxes
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getAllTax(req, res, next) {
-    // write code to get all tax from the database here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const taxes = await db.Tax.findAll();
+      return res.status(200).send(taxes);
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
