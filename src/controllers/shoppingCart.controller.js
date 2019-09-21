@@ -171,24 +171,38 @@ class ShoppingCartController {
               message: `No products to delete in shopping cart ${cart_id}`,
             },
           });
-    } catch (e) {
-      return next(e);
+      // eslint-disable-next-line no-shadow
+    } catch (error) {
+      return next(error);
     }
   }
 
   /**
    * remove single item from cart
    * cart id is obtained from current session
-   *
-   * @static
-   * @param {obj} req express request object
-   * @param {obj} res express response object
-   * @returns {json} returns json response with message
-   * @memberof ShoppingCartController
    */
   static async removeItemFromCart(req, res, next) {
+    const { params, query } = req;
     try {
-      // implement code to remove item from cart here
+      const response = await db.ShoppingCart.destroy({
+        where: {
+          cart_id: query.cart_id,
+          item_id: params.item_id,
+        },
+      });
+
+      return response
+        ? res
+            .status(200)
+            .send({ message: `item ${params.item_id} deleted from cart ${query.cart_id}` })
+        : res.status(404).send({
+            error: {
+              status: 404,
+              code: 'SPC_03',
+              message: `item with item_id ${params.item_id} not found`,
+            },
+          });
+      // eslint-disable-next-line no-shadow
     } catch (error) {
       return next(error);
     }
