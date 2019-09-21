@@ -25,6 +25,7 @@ const db = {
   ShoppingCart: sequelize.import('./shoppingCart'),
   ShippingRegion: sequelize.import('./shippingRegion'),
   Shipping: sequelize.import('./shipping'),
+  Tax: sequelize.import('./tax'),
 };
 
 fs.readdirSync(__dirname)
