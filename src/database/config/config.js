@@ -18,10 +18,7 @@ module.exports = {
     logging: false,
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
+    url: process.env.CLEARDB_DATABASE_URL,
     dialect: 'mysql',
     logging: false,
   },
