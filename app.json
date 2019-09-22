@@ -1,0 +1,38 @@
+{
+  "name": "turing-api",
+  "scripts": {},
+  "env": {
+    "CLEARDB_DATABASE_URL": {
+      "required": true
+    },
+    "facebookClientID": {
+      "required": true
+    },
+    "facebookClientSecret": {
+      "required": true
+    },
+    "JWT_ISSUER": {
+      "required": true
+    },
+    "JWT_KEY": {
+      "required": true
+    },
+    "NODE_ENV": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "cleardb"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "stack": "heroku-18"
+}

@@ -2,17 +2,21 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-path-concat */
 /* eslint-disable dot-notation */
+import dotenv from 'dotenv';
+
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
+
+dotenv.config();
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 
 let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+if (env === 'production') {
+  sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
