@@ -7,7 +7,6 @@ import { requireSignIn, hasAuthorization } from '../../utils/jwt';
 const passportFacebook = passport.authenticate('facebookToken', { session: false });
 
 const router = Router();
-router.post('/customers', CustomerController.updateCreditCard);
 router.post('/customers/signup', Validations.validity('sign-up'), CustomerController.create);
 router.post('/customers/login', Validations.validity('login'), CustomerController.login);
 router.post('/customers/facebook', passportFacebook, CustomerController.facebookLogin);

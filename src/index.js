@@ -8,7 +8,9 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
+import swagger from 'swagger-ui-express';
 import router from './routes';
+import swaggerDoc from '../swagger';
 
 require('./utils/passport-config');
 
@@ -25,6 +27,7 @@ app.use(cors(corsOptions));
 // compression and header security middleware
 app.use(compression());
 app.use(helmet());
+app.use('/docs', swagger.serve, swagger.setup(swaggerDoc, { explorer: true }));
 
 app.use(morgan('dev'));
 
