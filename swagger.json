@@ -41,6 +41,7 @@
       "post": {
         "description": "Creates new user account",
         "consumes": ["application/json"],
+        "security": [],
         "parameters": [
           {
             "$ref": "#/parameters/signup"
@@ -64,6 +65,7 @@
       "post": {
         "description": "Login a user",
         "consumes": ["application/json"],
+        "security": [],
         "parameters": [
           {
             "$ref": "#/parameters/login"
@@ -90,6 +92,7 @@
       "post": {
         "description": "sign-up new user using facebook",
         "consumes": ["application/json"],
+        "security": [],
         "parameters": [
           {
             "$ref": "#/parameters/facebook"
@@ -161,6 +164,7 @@
       "put": {
         "description": "Update user address",
         "consumes": ["application/json"],
+        "security": [],
         "parameters": [
           {
             "$ref": "#/parameters/customer-update-address"
@@ -190,6 +194,7 @@
       "put": {
         "description": "Update user credit card",
         "consumes": ["application/json"],
+        "security": [],
         "tags": ["Customer"],
         "parameters": [
           {
@@ -330,6 +335,7 @@
       "get": {
         "description": "Generate unique cart id",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Shopping cart"],
         "responses": {
           "200": {
@@ -351,6 +357,7 @@
       "post": {
         "description": "Add product to shopping cart",
         "consumes": ["application/json"],
+        "security": [],
         "tags": ["Shopping cart"],
         "parameters": [
           {
@@ -380,6 +387,7 @@
       "get": {
         "description": "list of items in the shopping cart using the cart id",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Shopping cart"],
         "parameters": [
           {
@@ -409,6 +417,7 @@
       "put": {
         "description": "updates the quantity of an item in the shopping cart",
         "consumes": ["application/json"],
+        "security": [],
         "tags": ["Shopping cart"],
         "parameters": [
           {
@@ -438,6 +447,7 @@
       "delete": {
         "description": "deletes all items in the shopping cart",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Shopping cart"],
         "parameters": [
           {
@@ -470,6 +480,7 @@
       "delete": {
         "description": "Remove a single item from the shopping cart using the item id",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Shopping cart"],
         "parameters": [
           {
@@ -508,6 +519,7 @@
       "get": {
         "description": "Returns a list of taxes in the database",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Tax"],
         "responses": {
           "200": {
@@ -532,6 +544,7 @@
       "get": {
         "description": "Return a single tax using the tax id",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Tax"],
         "parameters": [
           {
@@ -564,6 +577,7 @@
       "get": {
         "description": "Returns a list of shipping regions in the database",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Shipping"],
         "responses": {
           "200": {
@@ -588,6 +602,7 @@
       "get": {
         "description": "Returns the list of shipping in a selected region using the shipping region id",
         "produces": ["application/json"],
+        "security": [],
         "tags": ["Shipping"],
         "parameters": [
           {
@@ -872,5 +887,17 @@
         }
       }
     }
-  }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
 }
