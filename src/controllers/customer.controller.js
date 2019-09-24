@@ -166,13 +166,13 @@ class CustomerController {
     });
   };
 
-  static update = async (req, res, next) => {
+  static update = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return Validations.errorDisplay(req, res, errors);
     }
     try {
-      await db.Customer.update(req.body, {
+      db.Customer.update(req.body, {
         where: {
           customer_id: req.auth.sub,
         },
