@@ -21,6 +21,7 @@
 import { validationResult } from 'express-validator';
 import uniqid from 'uniqid';
 import { error } from 'winston';
+import Stripe from 'stripe';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
@@ -353,10 +354,27 @@ class ShoppingCartController {
    * @param {*} next
    */
   static async processStripePayment(req, res, next) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const { email, stripeToken, order_id } = req.body; // eslint-disable-line
     const { customer_id } = req;  // eslint-disable-line
     try {
       // implement code to process payment and send order confirmation email here
+      await stripe.charges.create(
+        {
+          source: stripeToken,
+          description: 'I like it',
+          amount: 200,
+          currency: 'gbp',
+        },
+        (err, charges) => {
+          if (err && err.type === 'StripeCardError') {
+            console.log('Your card was declined');
+          }
+          return res.status(200).send(charges);
+        }
+      );
+
+      // eslint-disable-next-line no-shadow
     } catch (error) {
       return next(error);
     }
