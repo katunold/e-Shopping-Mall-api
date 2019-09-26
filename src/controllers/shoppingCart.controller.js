@@ -20,7 +20,8 @@
 
 import { validationResult } from 'express-validator';
 import uniqid from 'uniqid';
-import { error } from 'winston';
+import nodemailer from 'nodemailer';
+import Stripe from 'stripe';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
@@ -353,10 +354,58 @@ class ShoppingCartController {
    * @param {*} next
    */
   static async processStripePayment(req, res, next) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const transporter = nodemailer.createTransport({
+      service: 'SendGrid',
+      auth: {
+        user: process.env.SENDGRID_USERNAME,
+        pass: process.env.SENDGRID_PASSWORD,
+      },
+    });
     const { email, stripeToken, order_id } = req.body; // eslint-disable-line
     const { customer_id } = req;  // eslint-disable-line
+    let response;
     try {
       // implement code to process payment and send order confirmation email here
+      stripe.charges.create(
+        {
+          source: stripeToken,
+          description: 'I like it',
+          amount: 200,
+          currency: 'gbp',
+        },
+        // eslint-disable-next-line consistent-return
+        (err, charges) => {
+          if (err && err.type === 'StripeInvalidRequestError') {
+            return res.status(400).send({ message: err.message });
+          }
+          response = charges;
+        }
+      );
+      const subject = 'Order has been placed successfully';
+      const body = `
+             Hello, 
+             \n\n Order with order_id ${order_id} has been placed
+             `;
+      const mailOptions = {
+        from: 'no-reply@write-it.com',
+        to: email,
+        subject,
+        text: body,
+      };
+
+      // eslint-disable-next-line no-shadow
+      transporter.sendMail(mailOptions, err => {
+        if (err) {
+          return res.status(500).send({ msg: err.message });
+        }
+        return res.status(201).send({
+          message: 'Order has been placed',
+          response,
+        });
+      });
+
+      // eslint-disable-next-line no-shadow
     } catch (error) {
       return next(error);
     }

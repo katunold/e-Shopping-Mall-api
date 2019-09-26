@@ -23,6 +23,6 @@ router.post('/orders', requireSignIn, Validations.validity(), ShoppingCartContro
 router.get('/orders/inCustomer', requireSignIn, ShoppingCartController.getCustomerOrders);
 router.get('/orders/:order_id', requireSignIn, ShoppingCartController.getOrder);
 router.get('/orders/shortDetail/:order_id', requireSignIn, ShoppingCartController.getOrderSummary);
-router.post('/stripe/charge', ShoppingCartController.processStripePayment);
+router.post('/stripe/charge', requireSignIn, ShoppingCartController.processStripePayment);
 
 export default router;
