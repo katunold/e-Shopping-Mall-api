@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
+import paginate from 'express-paginate';
 import swagger from 'swagger-ui-express';
 import router from './routes';
 import swaggerDoc from '../swagger';
@@ -27,6 +28,7 @@ app.use(cors(corsOptions));
 // compression and header security middleware
 app.use(compression());
 app.use(helmet());
+app.use(paginate.middleware(10, 50));
 app.use('/docs', swagger.serve, swagger.setup(swaggerDoc, { explorer: true }));
 
 app.use(morgan('dev'));

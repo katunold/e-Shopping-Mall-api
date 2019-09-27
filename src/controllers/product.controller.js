@@ -17,14 +17,7 @@
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
-import {
-  Product,
-  Department,
-  AttributeValue,
-  Attribute,
-  Category,
-  Sequelize,
-} from '../database/models';
+import db from '../database/models';
 /**
  *
  *
@@ -33,26 +26,35 @@ import {
 class ProductController {
   /**
    * get all products
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and product data
-   * @memberof ProductController
    */
   static async getAllProducts(req, res, next) {
     const { query } = req;
-    const { page, limit, offset } = query
+    // eslint-disable-next-line camelcase
+    const { page, limit, offset, description_length } = query;
     const sqlQueryMap = {
       limit,
       offset,
     };
+
     try {
-      const products = await Product.findAndCountAll(sqlQueryMap);
-      return res.status(200).json({
-        status: true,
-        products,
+      const products = await db.Product.findAndCountAll(sqlQueryMap);
+      const productCount = products.count;
+      const descriptionSummary = [];
+      products.rows.forEach(item => {
+        // eslint-disable-next-line camelcase,no-param-reassign
+        item.description = item.description.slice(0, description_length);
+        descriptionSummary.push(item);
+      });
+
+      const pageCount = Math.ceil(productCount / limit);
+      return res.status(200).send({
+        paginationMeta: {
+          currentPage: page,
+          currentPageSize: limit,
+          totalPages: pageCount,
+          totalRecords: productCount,
+        },
+        rows: descriptionSummary,
       });
     } catch (error) {
       return next(error);
@@ -137,7 +139,7 @@ class ProductController {
 
     const { product_id } = req.params;  // eslint-disable-line
     try {
-      const product = await Product.findByPk(product_id, {
+      const product = await db.Product.findByPk(product_id, {
         include: [
           {
             model: AttributeValue,
