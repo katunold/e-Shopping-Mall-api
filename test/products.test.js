@@ -1,10 +1,10 @@
 import chai from 'chai';
 import sinon from 'sinon';
+import { error } from 'winston';
 import app from '../src';
 import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
-import { error } from 'winston';
 
 const { expect } = chai;
 const productModel = db.Product;
@@ -27,6 +27,19 @@ describe('Products route', () => {
     return chai
       .request(app)
       .get(route)
+      .send();
+  };
+
+  // eslint-disable-next-line no-shadow
+  const getByPkHelper = (data, error = false) => {
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandBox.stub(productModel, 'findByPk').throws(['something went wrong'])
+      : sandBox.stub(productModel, 'findByPk').returns(data);
+
+    return chai
+      .request(app)
+      .get('/products/16')
       .send();
   };
 
@@ -67,6 +80,21 @@ describe('Products route', () => {
       mockData.searchProducts,
       true
     );
+    expect(response).to.have.status(500);
+  });
+
+  it('should find and return a product by product_id', async () => {
+    const response = await getByPkHelper(mockData.productByPk);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return a 404 if a product is not found', async () => {
+    const response = await getByPkHelper(null);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error in case something went wrong', async () => {
+    const response = await getByPkHelper(null, true);
     expect(response).to.have.status(500);
   });
 });

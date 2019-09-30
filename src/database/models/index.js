@@ -29,6 +29,8 @@ const db = {
   ShoppingCart: sequelize.import('./shoppingCart'),
   ShippingRegion: sequelize.import('./shippingRegion'),
   Shipping: sequelize.import('./shipping'),
+  AttributeValue: sequelize.import('./attributeValue'),
+  Attribute: sequelize.import('./attribute'),
   Tax: sequelize.import('./tax'),
 };
 
