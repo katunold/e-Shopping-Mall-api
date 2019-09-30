@@ -162,21 +162,15 @@ class ProductController {
 
   /**
    * get single product details
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and product details
-   * @memberof ProductController
    */
+
   static async getProduct(req, res, next) {
     const { product_id } = req.params;  // eslint-disable-line
     try {
       const product = await db.Product.findByPk(product_id, {
         include: [
           {
-            model: AttributeValue,
+            model: db.AttributeValue,
             as: 'attributes',
             attributes: ['value'],
             through: {
@@ -184,14 +178,17 @@ class ProductController {
             },
             include: [
               {
-                model: Attribute,
+                model: db.Attribute,
                 as: 'attribute_type',
               },
             ],
           },
         ],
       });
-      return res.status(500).json({ message: 'This works!!1' });
+      if (product) {
+        return res.status(200).send(product);
+      }
+      return res.status(404).send({ message: 'Product not found' });
     } catch (error) {
       return next(error);
     }
