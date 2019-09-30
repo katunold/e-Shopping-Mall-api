@@ -4,6 +4,7 @@ import app from '../src';
 import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
+import { error } from 'winston';
 
 const { expect } = chai;
 const productModel = db.Product;
@@ -17,6 +18,17 @@ describe('Products route', () => {
   afterEach('Restore sandbox', () => {
     sandBox.restore();
   });
+
+  const searchHelper = (route, data, error = false) => {
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandBox.stub(productModel, 'findAll').throws(['something went wrong'])
+      : sandBox.stub(productModel, 'findAll').returns(data);
+    return chai
+      .request(app)
+      .get(route)
+      .send();
+  };
 
   it('should get all products from the database', async () => {
     sandBox.stub(productModel, 'findAndCountAll').returns(mockData.products);
@@ -33,6 +45,28 @@ describe('Products route', () => {
       .request(app)
       .get('/products?page=1&limit=5&description_length=50')
       .send();
+    expect(response).to.have.status(500);
+  });
+
+  it('should return a product on search', async () => {
+    const response = await searchHelper(
+      '/products/search?query_string=cat&all_words=off',
+      mockData.searchProducts
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return a 404 if no item is found', async () => {
+    const response = await searchHelper('/products/search?query_string=cat&all_words=on', []);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error if something goes wrong', async () => {
+    const response = await searchHelper(
+      '/products/search?query_string=cat&all_words=on',
+      mockData.searchProducts,
+      true
+    );
     expect(response).to.have.status(500);
   });
 });

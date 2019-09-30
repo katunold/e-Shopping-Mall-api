@@ -2,7 +2,7 @@
  * The Product controller contains all static methods that handles product request
  * Some methods work fine, some needs to be implemented from scratch while others may contain one or two bugs
  * The static methods and their function include:
- * 
+ *
  * - getAllProducts - Return a paginated list of products
  * - searchProducts - Returns a list of product that matches the search query string
  * - getProductsByCategory - Returns all products in a product category
@@ -13,16 +13,16 @@
  * - getAllCategories - Returns all categories
  * - getSingleCategory - Returns a single category
  * - getDepartmentCategories - Returns all categories in a department
- * 
+ *
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
+import { Op } from 'sequelize';
 import db from '../database/models';
 /**
- *
- *
  * @class ProductController
  */
+const op = Op;
 class ProductController {
   /**
    * get all products
@@ -72,10 +72,46 @@ class ProductController {
    * @memberof ProductController
    */
   static async searchProduct(req, res, next) {
-    const { query_string, all_words } = req.query;  // eslint-disable-line
     // all_words should either be on or off
     // implement code to search product
-    return res.status(200).json({ message: 'this works' });
+    const responseData = [];
+    const { query } = req;  // eslint-disable-line
+    // eslint-disable-next-line camelcase
+    const { query_string, all_words } = query;
+
+    const queryOptions =
+      // eslint-disable-next-line camelcase
+      all_words === 'on'
+        ? {
+            name: {
+              // eslint-disable-next-line camelcase
+              [op.like]: [query_string],
+            },
+          }
+        : {
+            name: {
+              // eslint-disable-next-line camelcase
+              [op.substring]: [query_string],
+            },
+          };
+    try {
+      const response = await db.Product.findAll({
+        where: queryOptions,
+      });
+      if (response.length) {
+        response.forEach(item => {
+          delete item.image;
+          delete item.image_2;
+          delete item.description;
+          responseData.push(item);
+        });
+        return res.status(200).send({ rows: responseData });
+      }
+      // eslint-disable-next-line camelcase
+      return res.status(404).send({ message: `Product with name ${query_string} not found` });
+    } catch (error) {
+      return res.status(500).send(error);
+    }
   }
 
   /**
@@ -89,7 +125,6 @@ class ProductController {
    * @memberof ProductController
    */
   static async getProductsByCategory(req, res, next) {
-
     try {
       const { category_id } = req.params; // eslint-disable-line
       const products = await Product.findAndCountAll({
@@ -136,7 +171,6 @@ class ProductController {
    * @memberof ProductController
    */
   static async getProduct(req, res, next) {
-
     const { product_id } = req.params;  // eslint-disable-line
     try {
       const product = await db.Product.findByPk(product_id, {
@@ -199,7 +233,7 @@ class ProductController {
         error: {
           status: 404,
           message: `Department with id ${department_id} does not exist`,  // eslint-disable-line
-        }
+        },
       });
     } catch (error) {
       return next(error);
