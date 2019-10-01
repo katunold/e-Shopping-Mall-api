@@ -19,6 +19,9 @@
  */
 import { Op } from 'sequelize';
 import db from '../database/models';
+import { Actions } from '../utils/db-actions';
+import { validationResult } from 'express-validator';
+import Validations from '../utils/validation';
 /**
  * @class ProductController
  */
@@ -268,6 +271,43 @@ class ProductController {
     const { department_id } = req.params;  // eslint-disable-line
     // implement code to get categories in a department here
     return res.status(200).json({ message: 'this works' });
+  }
+
+  /**
+   * method to post product reviews
+   */
+  static async postProductReviews(req, res, next) {
+    // eslint-disable-next-line camelcase
+    const { params, auth } = req;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return Validations.errorDisplay(req, res, errors);
+    }
+    const review = {
+      customer_id: auth.sub,
+      product_id: params.product_id,
+    };
+    try {
+      const product = await db.Product.findByPk(params.product_id);
+      if (product) {
+        const response = await Actions.addData(db.Review, Object.assign(review, req.body));
+        const displayResponse = {
+          name: product.name,
+          review: response.review,
+          rating: response.rating,
+          created_on: response.created_on,
+        };
+
+        return res.status(201).send(displayResponse);
+      }
+
+      return res
+        .status(404)
+        .send({ message: `Product with id ${params.product_id} does not exist` });
+    } catch (error) {
+      return next(error);
+    }
   }
 }
 

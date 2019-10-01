@@ -475,3 +475,34 @@ exports.productAttributes = [
     },
   },
 ];
+
+exports.productReview = {
+  review: 'This is a world class product',
+  rating: 4,
+};
+
+exports.erroredProductReview = {
+  review: 'This is a world class product',
+  rating: 8,
+};
+
+exports.findProductByPk = {
+  product_id: 9,
+  name: 'Corsica',
+  description: `Borrowed from Spain, the "Moor's head" may have celebrated the Christians' victory over the Moslems in that country.`,
+  price: '22.00',
+  discounted_price: '0.00',
+  image: 'corsica.gif',
+  image_2: 'corsica-2.gif',
+  thumbnail: 'corsica-thumbnail.gif',
+  display: 0,
+};
+
+exports.reviewProductResponse = {
+  review_id: 6,
+  customer_id: 26,
+  product_id: '9',
+  review: 'This is a world class product',
+  rating: '4',
+  created_on: '2019-10-02T06:54:19.620Z',
+};
