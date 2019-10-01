@@ -1,6 +1,5 @@
 import chai from 'chai';
 import sinon from 'sinon';
-import { error } from 'winston';
 import app from '../src';
 import mockData from './helpers/mock-data';
 
