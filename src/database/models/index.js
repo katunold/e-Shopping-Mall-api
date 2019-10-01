@@ -32,6 +32,7 @@ const db = {
   AttributeValue: sequelize.import('./attributeValue'),
   Attribute: sequelize.import('./attribute'),
   Tax: sequelize.import('./tax'),
+  ProductAttribute: import('./productAttribute'),
 };
 
 fs.readdirSync(__dirname)

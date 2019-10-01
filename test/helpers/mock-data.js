@@ -437,3 +437,41 @@ exports.productByPk = {
   display: 0,
 };
 
+exports.productAttributes = [
+  {
+    AttributeValue: {
+      attribute_value_id: 1,
+      value: 'S',
+      attribute_type: {
+        name: 'Size',
+      },
+    },
+  },
+  {
+    AttributeValue: {
+      attribute_value_id: 2,
+      value: 'M',
+      attribute_type: {
+        name: 'Size',
+      },
+    },
+  },
+  {
+    AttributeValue: {
+      attribute_value_id: 3,
+      value: 'L',
+      attribute_type: {
+        name: 'Size',
+      },
+    },
+  },
+  {
+    AttributeValue: {
+      attribute_value_id: 4,
+      value: 'XL',
+      attribute_type: {
+        name: 'Size',
+      },
+    },
+  },
+];

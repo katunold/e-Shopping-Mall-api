@@ -115,14 +115,7 @@ class ProductController {
   }
 
   /**
-   * get all products by caetgory
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and product data
-   * @memberof ProductController
+   * get all products by category
    */
   static async getProductsByCategory(req, res, next) {
     try {
@@ -148,16 +141,21 @@ class ProductController {
 
   /**
    * get all products by department
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and product data
-   * @memberof ProductController
    */
   static async getProductsByDepartment(req, res, next) {
     // implement the method to get products by department
+    // eslint-disable-next-line camelcase
+    const { department_id } = req.params;
+    try {
+      const products = await db.Product.findAll({
+        where: {
+          department_id,
+        },
+      });
+      return res.status(200).send(products);
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
