@@ -122,22 +122,54 @@ class ProductController {
    * get all products by category
    */
   static async getProductsByCategory(req, res, next) {
-    try {
-      const { category_id } = req.params; // eslint-disable-line
-      const products = await Product.findAndCountAll({
-        include: [
-          {
-            model: Department,
-            where: {
-              category_id,
-            },
-            attributes: [],
+    const { query, params } = req;
+    // eslint-disable-next-line camelcase
+    const { page, limit, description_length } = query;
+    const { category_id } = params; // eslint-disable-line
+    const sqlQueryMap = {
+      limit,
+      include: [
+        {
+          model: db.Category,
+          foreignKey: 'product_id',
+          through: 'ProductCategory',
+          where: {
+            category_id,
           },
-        ],
-        limit,
-        offset,
-      });
-      return next(products);
+        },
+      ],
+    };
+    try {
+      const products = await db.Product.findAndCountAll(sqlQueryMap);
+      const descriptionSummary = [];
+      if (products) {
+        products.rows.forEach(item => {
+          // eslint-disable-next-line camelcase,no-param-reassign
+          const { product_id, name, description, price, discounted_price, thumbnail } = item;
+
+          const data = {
+            product_id,
+            name,
+            description: description.slice(0, description_length),
+            price,
+            discounted_price,
+            thumbnail,
+          };
+
+          descriptionSummary.push(data);
+        });
+
+        return res.status(200).send({
+          page,
+          rows: descriptionSummary,
+        });
+      }
+
+      // eslint-disable-next-line camelcase
+      return res
+        .status(404)
+        .send({ message: `No products attached to category with id ${category_id}` });
+      // eslint-disable-next-line no-shadow
     } catch (error) {
       return next(error);
     }

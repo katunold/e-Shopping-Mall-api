@@ -517,3 +517,33 @@ exports.productReviews = [
     },
   },
 ];
+
+exports.productsInCategory = {
+  counts: 2,
+  rows: [
+    {
+      product_id: 29,
+      name: 'Irish Coat of Arms',
+      description:
+        "This was one of the first stamps of the new Irish Republic, and it makes a T-shirt you'll be proud to wear on St. Paddy's Day!",
+      price: '14.99',
+      discounted_price: '0.00',
+      image: 'irish-coat-of-arms.gif',
+      image_2: 'irish-coat-of-arms-2.gif',
+      thumbnail: 'irish-coat-of-arms-thumbnail.gif',
+      display: 0,
+    },
+    {
+      product_id: 12,
+      name: 'Irish Coat of Arms',
+      description:
+        "This was one of the first stamps of the new Irish Republic, and it makes a T-shirt you'll be proud to wear on St. Paddy's Day!",
+      price: '14.99',
+      discounted_price: '0.00',
+      image: 'irish-coat-of-arms.gif',
+      image_2: 'irish-coat-of-arms-2.gif',
+      thumbnail: 'irish-coat-of-arms-thumbnail.gif',
+      display: 0,
+    },
+  ],
+};
