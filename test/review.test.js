@@ -1,11 +1,11 @@
 import chai from 'chai';
 import sinon from 'sinon';
+import { error } from 'winston';
 import app from '../src';
 import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
 import { userSignUp } from './helpers/test-setup';
-import { error } from 'winston';
 
 const { expect } = chai;
 const productModel = db.Product;
@@ -27,7 +27,7 @@ describe('Review routes', () => {
     sandBox.restore();
   });
 
-  const postReviewHelper = (reviewData, productFilter, reviewResponse, error=false ) => {
+  const postReviewHelper = (reviewData, productFilter, reviewResponse, error = false) => {
     sandBox.restore();
     // eslint-disable-next-line no-unused-expressions
     error
@@ -39,6 +39,17 @@ describe('Review routes', () => {
       .post('/products/5/reviews')
       .set({ Authorization: `Bearer ${accessToken}` })
       .send(reviewData);
+  };
+
+  const getProductReviewsHelper = (productReviews, error = false) => {
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandBox.stub(reviewModel, 'findAll').throws(['Something went wrong'])
+      : sandBox.stub(reviewModel, 'findAll').returns(productReviews);
+    return chai
+      .request(app)
+      .get('/products/9/reviews')
+      .send();
   };
 
   it('should submit a product review', async () => {
@@ -62,6 +73,21 @@ describe('Review routes', () => {
 
   it('should throw an error incase something goes wrong', async () => {
     const response = await postReviewHelper(mockData.productReview, null, null, true);
+    expect(response).to.have.status(500);
+  });
+
+  it('should return a products reviews', async () => {
+    const response = await getProductReviewsHelper(mockData.productReviews);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if product has no reviews', async () => {
+    const response = await getProductReviewsHelper([]);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw error if something goes wrong', async () => {
+    const response = await getProductReviewsHelper([], true);
     expect(response).to.have.status(500);
   });
 });

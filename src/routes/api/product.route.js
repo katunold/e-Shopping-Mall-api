@@ -14,6 +14,7 @@ router.post(
   Validations.validity('product-review'),
   ProductController.postProductReviews
 );
+router.get('/products/:product_id/reviews', ProductController.getProductReviews);
 router.get('/products/:product_id', ProductController.getProduct);
 router.get('/products/inCategory/:category_id', ProductController.getProductsByCategory);
 router.get('/products/inDepartment/:department_id', ProductController.getProductsByDepartment);
