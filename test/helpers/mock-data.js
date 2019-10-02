@@ -476,6 +476,17 @@ exports.productAttributes = [
   },
 ];
 
+exports.attributeValues = [
+  {
+    attribute_value_id: 6,
+    value: 'White',
+  },
+  {
+    attribute_value_id: 7,
+    value: 'Black',
+  },
+];
+
 exports.productReview = {
   review: 'This is a world class product',
   rating: 4,
