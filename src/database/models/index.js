@@ -34,6 +34,9 @@ const db = {
   Tax: sequelize.import('./tax'),
   ProductAttribute: import('./productAttribute'),
   Review: import('./review'),
+  Department: import('./department'),
+  Category: import('./category'),
+  ProductCategory: import('./productCategory'),
 };
 
 fs.readdirSync(__dirname)
