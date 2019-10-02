@@ -506,3 +506,14 @@ exports.reviewProductResponse = {
   rating: '4',
   created_on: '2019-10-02T06:54:19.620Z',
 };
+
+exports.productReviews = [
+  {
+    review: 'This is a world class product',
+    rating: 4,
+    created_on: '2019-10-02T06:54:19.000Z',
+    Product: {
+      name: 'Corsica',
+    },
+  },
+];

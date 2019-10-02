@@ -18,9 +18,10 @@
  *  endpoints, request body/param, and response object for each of these method
  */
 import { Op } from 'sequelize';
+import { validationResult } from 'express-validator';
+import { error } from 'winston';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
-import { validationResult } from 'express-validator';
 import Validations from '../utils/validation';
 /**
  * @class ProductController
@@ -305,6 +306,52 @@ class ProductController {
       return res
         .status(404)
         .send({ message: `Product with id ${params.product_id} does not exist` });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  /**
+   *  method to get product reviews
+   */
+  static async getProductReviews(req, res, next) {
+    // eslint-disable-next-line camelcase
+    const { product_id } = req.params;
+    const productReviews = [];
+    try {
+      const response = await db.Review.findAll({
+        where: {
+          product_id,
+        },
+        attributes: ['review', 'rating', 'created_on'],
+        include: [
+          {
+            model: db.Product,
+            foreignKey: product_id,
+            attributes: ['name'],
+          },
+        ],
+      });
+
+      if (response.length) {
+        response.forEach(itemReview => {
+          // eslint-disable-next-line camelcase
+          const { review, rating, created_on, Product } = itemReview;
+          const data = {
+            review,
+            rating,
+            created_on,
+            name: Product.name,
+          };
+          productReviews.push(data);
+        });
+
+        return res.status(200).send(productReviews);
+      }
+
+      // eslint-disable-next-line camelcase
+      return res.status(404).send({ message: `no reviews for product with id ${product_id}` });
+      // eslint-disable-next-line no-shadow
     } catch (error) {
       return next(error);
     }
