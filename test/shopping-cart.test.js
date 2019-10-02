@@ -55,6 +55,7 @@ describe('Shopping-cart route', () => {
   };
 
   const deleteProductsHelper = async (deleted, error = false) => {
+    // eslint-disable-next-line no-unused-expressions
     error
       ? sandbox.stub(shoppingCartModel, 'destroy').throws(['something went wrong'])
       : sandbox.stub(shoppingCartModel, 'destroy').returns(deleted);
