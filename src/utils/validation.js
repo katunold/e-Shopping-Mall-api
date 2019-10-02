@@ -122,6 +122,22 @@ export default class Validations {
             .not()
             .isEmpty(),
         ];
+      case 'product-review':
+        return [
+          body('review', 'review is required')
+            .trim()
+            .escape()
+            .exists()
+            .not()
+            .isEmpty(),
+          body('rating', 'rating is required')
+            .trim()
+            .escape()
+            .exists()
+            .not()
+            .isEmpty(),
+          body('rating', 'min is 1 max is 5').matches(/^([1-5])$/),
+        ];
       default:
         return [
           body('cart_id', 'cart_id is required')
