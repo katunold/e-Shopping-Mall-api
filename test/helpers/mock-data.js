@@ -558,3 +558,17 @@ exports.productsInCategory = {
     },
   ],
 };
+
+exports.productCategory = {
+  Categories: [
+    {
+      category_id: 1,
+      department_id: 1,
+      name: 'French',
+      ProductCategory: {
+        product_id: 9,
+        category_id: 1,
+      },
+    },
+  ],
+};
