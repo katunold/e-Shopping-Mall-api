@@ -280,9 +280,31 @@ class ProductController {
    * This method should get list of categories in a department
    */
   static async getDepartmentCategories(req, res, next) {
-    const { department_id } = req.params;  // eslint-disable-line
     // implement code to get categories in a department here
-    return res.status(200).json({ message: 'this works' });
+    const { department_id } = req.params;  // eslint-disable-line
+    try {
+      const response = await db.Department.findOne({
+        where: {
+          department_id,
+        },
+        attributes: [],
+        include: [
+          {
+            model: db.Category,
+            foreignKey: 'department_id',
+          },
+        ],
+      });
+
+      if (response) {
+        return res.status(200).send({ rows: response.Categories });
+      }
+      return res
+        .status(404)
+        .send({ message: `department with id ${department_id} does not exist` });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
