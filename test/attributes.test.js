@@ -21,7 +21,7 @@ describe('Attribute routes', () => {
     sandbox.restore();
   });
 
-  const getProductAttributesHelper = (route, data, model, error = false) => {
+  const getProductAttributesHelper = (route, data, model, method, error = false) => {
     // eslint-disable-next-line no-unused-expressions
     error
       ? sandbox.stub(model, 'findAll').throws(['Something went wrong'])
@@ -36,7 +36,8 @@ describe('Attribute routes', () => {
     const response = await getProductAttributesHelper(
       '/attributes',
       mockData.productAttributes,
-      attributeModel
+      attributeModel,
+      'findAll'
     );
     expect(response).to.have.status(200);
   });
@@ -46,6 +47,7 @@ describe('Attribute routes', () => {
       '/attributes',
       mockData.productAttributes,
       attributeModel,
+      'findAll',
       true
     );
     expect(response).to.have.status(500);
@@ -55,7 +57,8 @@ describe('Attribute routes', () => {
     const response = await getProductAttributesHelper(
       '/attributes/inProduct/15',
       mockData.productAttributes,
-      productAttributeModal
+      productAttributeModal,
+      'findAll'
     );
     expect(response).to.have.status(200);
   });
@@ -64,7 +67,8 @@ describe('Attribute routes', () => {
     const response = await getProductAttributesHelper(
       '/attributes/inProduct/15',
       [],
-      productAttributeModal
+      productAttributeModal,
+      'findAll'
     );
     expect(response).to.have.status(404);
   });
@@ -74,6 +78,7 @@ describe('Attribute routes', () => {
       '/attributes/inProduct/15',
       mockData.productAttributes,
       productAttributeModal,
+      'findAll',
       true
     );
     expect(response).to.have.status(500);
@@ -83,7 +88,8 @@ describe('Attribute routes', () => {
     const response = await getProductAttributesHelper(
       '/attributes/values/1',
       mockData.attributeValues,
-      attributeValueModel
+      attributeValueModel,
+      'findAll'
     );
     expect(response).to.have.status(200);
   });
@@ -92,7 +98,8 @@ describe('Attribute routes', () => {
     const response = await getProductAttributesHelper(
       '/attributes/values/1',
       [],
-      attributeValueModel
+      attributeValueModel,
+      'findAll'
     );
     expect(response).to.have.status(404);
   });
@@ -102,8 +109,43 @@ describe('Attribute routes', () => {
       '/attributes/values/1',
       mockData.attributeValues,
       attributeValueModel,
+      'findAll',
       true
     );
+    expect(response).to.have.status(500);
+  });
+
+  it('should return a specific attribute', async () => {
+    const response = await getProductAttributesHelper(
+      '/attributes/1',
+      mockData.productAttributes,
+      attributeModel,
+      'findByPk'
+    );
+
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if attribute is not found', async () => {
+    const response = await getProductAttributesHelper(
+      '/attributes/1',
+      null,
+      attributeModel,
+      'findByPk'
+    );
+
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error in case something goes wrong while fetching an attribute', async () => {
+    const response = await getProductAttributesHelper(
+      '/attributes/1',
+      mockData.productAttributes,
+      attributeModel,
+      'findByPk',
+      true
+    );
+
     expect(response).to.have.status(500);
   });
 });

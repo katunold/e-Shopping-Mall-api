@@ -36,7 +36,17 @@ class AttributeController {
    */
   static async getSingleAttribute(req, res, next) {
     // Write code to get a single attribute using the attribute id provided in the request param
-    return res.status(200).json({ message: 'this works' });
+    // eslint-disable-next-line camelcase
+    const { attribute_id } = req.params;
+    try {
+      const response = await db.Attribute.findByPk(attribute_id);
+      return response
+        ? res.status(200).send(response)
+        : res.status(404).send({ message: `attribute with id ${attribute_id} not found` });
+      // eslint-disable-next-line no-shadow
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
