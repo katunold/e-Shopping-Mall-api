@@ -4,11 +4,11 @@ import app from '../src';
 import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
-import { userSignUp } from './helpers/test-setup';
 
 const { expect } = chai;
 const productAttributeModal = db.ProductAttribute;
 const attributeValueModel = db.AttributeValue;
+const attributeModel = db.Attribute;
 
 describe('Attribute routes', () => {
   let sandbox;
@@ -31,6 +31,25 @@ describe('Attribute routes', () => {
       .get(route)
       .send();
   };
+
+  it('should return attributes', async () => {
+    const response = await getProductAttributesHelper(
+      '/attributes',
+      mockData.productAttributes,
+      attributeModel
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should throw an error if something goes wrong while retrieving all attributes', async () => {
+    const response = await getProductAttributesHelper(
+      '/attributes',
+      mockData.productAttributes,
+      attributeModel,
+      true
+    );
+    expect(response).to.have.status(500);
+  });
 
   it('should return all attributes of a specific product', async () => {
     const response = await getProductAttributesHelper(

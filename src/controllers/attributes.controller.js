@@ -10,19 +10,22 @@
  * NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
-import { error } from 'winston';
+
 import db from '../database/models';
 
 class AttributeController {
   /**
    * This method get all attributes
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getAllAttributes(req, res, next) {
     // write code to get all attributes from the database here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const response = await db.Attribute.findAll();
+      return res.status(200).json(response);
+      // eslint-disable-next-line no-shadow
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
