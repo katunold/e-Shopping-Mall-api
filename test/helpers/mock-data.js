@@ -572,3 +572,29 @@ exports.productCategory = {
     },
   ],
 };
+
+exports.departmentCategories = {
+  rows: [
+    {
+      category_id: 1,
+      department_id: 1,
+      name: 'French',
+      description:
+        "The French have always had an eye for beauty. One look at the T-shirts below and you'll see that same appreciation has been applied abundantly to their postage stamps. Below are some of our most beautiful and colorful T-shirts, so browse away! And don't forget to go all the way to the bottom - you don't want to miss any of them!",
+    },
+    {
+      category_id: 2,
+      department_id: 1,
+      name: 'Italian',
+      description:
+        "The full and resplendent treasure chest of art, literature, music, and science that Italy has given the world is reflected splendidly in its postal stamps. If we could, we would dedicate hundreds of T-shirts to this amazing treasure of beautiful images, but for now we will have to live with what you see here. You don't have to be Italian to love these gorgeous T-shirts, just someone who appreciates the finer things in life!",
+    },
+    {
+      category_id: 3,
+      department_id: 1,
+      name: 'Irish',
+      description:
+        "It was Churchill who remarked that he thought the Irish most curious because they didn't want to be English. How right he was! But then, he was half-American, wasn't he? If you have an Irish genealogy you will want these T-shirts! If you suddenly turn Irish on St. Patrick's Day, you too will want these T-shirts! Take a look at some of the coolest T-shirts we have!",
+    },
+  ],
+};
