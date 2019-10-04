@@ -23,5 +23,6 @@ router.get('/departments/:department_id', ProductController.getDepartment);
 router.get('/categories', ProductController.getAllCategories);
 router.get('/categories/:category_id');
 router.get('/categories/inDepartment/:department_id', ProductController.getDepartmentCategories);
+router.get('/categories/inProduct/:product_id', ProductController.getProductCategory);
 
 export default router;

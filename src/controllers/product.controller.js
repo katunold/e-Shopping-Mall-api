@@ -19,7 +19,6 @@
  */
 import { Op } from 'sequelize';
 import { validationResult } from 'express-validator';
-import { error } from 'winston';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
@@ -67,13 +66,6 @@ class ProductController {
 
   /**
    * search all products
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and product data
-   * @memberof ProductController
    */
   static async searchProduct(req, res, next) {
     // all_words should either be on or off
@@ -230,13 +222,6 @@ class ProductController {
 
   /**
    * get all departments
-   *
-   * @static
-   * @param {object} req express request object
-   * @param {object} res express response object
-   * @param {object} next next middleware
-   * @returns {json} json object with status and department list
-   * @memberof ProductController
    */
   static async getAllDepartments(req, res, next) {
     try {
@@ -284,9 +269,6 @@ class ProductController {
 
   /**
    * This method should get a single category using the categoryId
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getSingleCategory(req, res, next) {
     const { category_id } = req.params;  // eslint-disable-line
@@ -296,9 +278,6 @@ class ProductController {
 
   /**
    * This method should get list of categories in a department
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getDepartmentCategories(req, res, next) {
     const { department_id } = req.params;  // eslint-disable-line
@@ -384,6 +363,36 @@ class ProductController {
       // eslint-disable-next-line camelcase
       return res.status(404).send({ message: `no reviews for product with id ${product_id}` });
       // eslint-disable-next-line no-shadow
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  static async getProductCategory(req, res, next) {
+    // eslint-disable-next-line camelcase
+    const { product_id } = req.params;
+    try {
+      const response = await db.Product.findOne({
+        where: {
+          product_id,
+        },
+        attributes: [],
+        include: [
+          {
+            model: db.Category,
+            through: 'product_category',
+            attributes: ['category_id', 'department_id', 'name'],
+          },
+        ],
+      });
+      if (response) {
+        // eslint-disable-next-line camelcase
+        const { category_id, department_id, name } = response.Categories[0];
+        return res.status(200).send({ category_id, department_id, name });
+      }
+
+      // eslint-disable-next-line camelcase
+      return res.status(404).send({ message: `product with id ${product_id} was not found` });
     } catch (error) {
       return next(error);
     }
