@@ -174,13 +174,39 @@ class ProductController {
     // implement the method to get products by department
     // eslint-disable-next-line camelcase
     const { department_id } = req.params;
+    const products = [];
     try {
-      const products = await db.Product.findAll({
+      const response = await db.Category.findOne({
         where: {
           department_id,
         },
+        attributes: [],
+        include: [
+          {
+            model: db.Product,
+            through: 'product_category',
+            attributes: [
+              'product_id',
+              'name',
+              'description',
+              'price',
+              'discounted_price',
+              'thumbnail',
+            ],
+          },
+        ],
       });
-      return res.status(200).send(products);
+      if (response) {
+        response.Products.forEach(item => {
+          // eslint-disable-next-line camelcase
+          const { product_id, name, description, price, discounted_price, thumbnail } = item;
+          const data = { product_id, name, description, price, discounted_price, thumbnail };
+          products.push(data);
+        });
+        return res.status(200).send({ rows: products });
+      }
+      // eslint-disable-next-line camelcase
+      return res.status(404).send({ message: `department with id ${department_id} not found` });
     } catch (error) {
       return next(error);
     }
@@ -258,13 +284,15 @@ class ProductController {
 
   /**
    * This method should get all categories
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getAllCategories(req, res, next) {
     // Implement code to get all categories here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const response = await db.Category.findAll();
+      return res.status(200).send({ rows: response });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
