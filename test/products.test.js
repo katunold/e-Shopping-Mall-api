@@ -7,6 +7,7 @@ import db from '../src/database/models';
 
 const { expect } = chai;
 const productModel = db.Product;
+const categoryModel = db.Category;
 
 describe('Products route', () => {
   let sandBox;
@@ -39,6 +40,18 @@ describe('Products route', () => {
     return chai
       .request(app)
       .get('/products/16')
+      .send();
+  };
+
+  const getDepartmentProductsHelper = (data, error = false) => {
+    // eslint-disable-next-line no-unused-expressions
+    error
+      ? sandBox.stub(categoryModel, 'findOne').throws(['Something went wrong'])
+      : sandBox.stub(categoryModel, 'findOne').returns(data);
+
+    return chai
+      .request(app)
+      .get('/products/inDepartment/2')
       .send();
   };
 
@@ -94,6 +107,21 @@ describe('Products route', () => {
 
   it('should throw an error in case something went wrong', async () => {
     const response = await getByPkHelper(null, true);
+    expect(response).to.have.status(500);
+  });
+
+  it('should return all products attached to a specific department', async () => {
+    const response = await getDepartmentProductsHelper(mockData.departmentProducts);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if department is not found', async () => {
+    const response = await getDepartmentProductsHelper(null);
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error if something goes wrong', async () => {
+    const response = await getDepartmentProductsHelper(mockData.departmentProducts, true);
     expect(response).to.have.status(500);
   });
 });
