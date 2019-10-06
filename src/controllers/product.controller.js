@@ -301,7 +301,14 @@ class ProductController {
   static async getSingleCategory(req, res, next) {
     const { category_id } = req.params;  // eslint-disable-line
     // implement code to get a single category here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const response = await db.Category.findByPk(category_id);
+      return response
+        ? res.status(200).send(response)
+        : res.status(404).send({ message: `Category with id ${category_id} not found` });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
