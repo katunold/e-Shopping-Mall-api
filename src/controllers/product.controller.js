@@ -284,13 +284,15 @@ class ProductController {
 
   /**
    * This method should get all categories
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
    */
   static async getAllCategories(req, res, next) {
     // Implement code to get all categories here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const response = await db.Category.findAll();
+      return res.status(200).send({ rows: response });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**

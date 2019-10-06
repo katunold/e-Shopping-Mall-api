@@ -9,6 +9,7 @@ import { error } from 'winston';
 const { expect } = chai;
 const productModel = db.Product;
 const deparmentModel = db.Department;
+const categoryModel = db.Category;
 
 describe('Category routes', () => {
   let sandBox;
@@ -31,18 +32,39 @@ describe('Category routes', () => {
       .send();
   };
 
-  const getProductCategoryHelper = (data, model, route, error = false) => {
+  const getProductCategoryHelper = (data, model, route, method, error = false) => {
     error
-      ? sandBox.stub(model, 'findOne').throws(['Something went wrong'])
-      : sandBox.stub(model, 'findOne').returns(data);
+      ? sandBox.stub(model, method).throws(['Something went wrong'])
+      : sandBox.stub(model, method).returns(data);
     return chai
       .request(app)
       .get(route)
       .send();
   };
 
+  it('should return all categories', async () => {
+    const response = await getProductCategoryHelper(
+      mockData.productCategory,
+      categoryModel,
+      '/categories',
+      'findAll'
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should throw an error incase something is wrong while fetching all categories', async () => {
+    const response = await getProductCategoryHelper(
+      mockData.productCategory,
+      categoryModel,
+      '/categories',
+      'findAll',
+      true
+    );
+    expect(response).to.have.status(500);
+  });
+
   it('should return all products in a specific category', async () => {
-    const response = await getCategoryProductsHelper(mockData.productsInCategory, );
+    const response = await getCategoryProductsHelper(mockData.productsInCategory);
     expect(response).to.have.status(200);
   });
 
@@ -60,13 +82,19 @@ describe('Category routes', () => {
     const response = await getProductCategoryHelper(
       mockData.productCategory,
       productModel,
-      '/categories/inProduct/9'
+      '/categories/inProduct/9',
+      'findOne'
     );
     expect(response).to.have.status(200);
   });
 
   it('should return a 404 if product does not exist ', async () => {
-    const response = await getProductCategoryHelper(null, productModel,'/categories/inProduct/9');
+    const response = await getProductCategoryHelper(
+      null,
+      productModel,
+      '/categories/inProduct/9',
+      'findOne'
+    );
     expect(response).to.have.status(404);
   });
 
@@ -75,6 +103,7 @@ describe('Category routes', () => {
       mockData.productCategory,
       productModel,
       '/categories/inProduct/9',
+      'findOne',
       true
     );
     expect(response).to.have.status(500);
@@ -84,7 +113,8 @@ describe('Category routes', () => {
     const response = await getProductCategoryHelper(
       mockData.departmentCategories,
       deparmentModel,
-      '/categories/inDepartment/1'
+      '/categories/inDepartment/1',
+      'findOne'
     );
     expect(response).to.have.status(200);
   });
@@ -93,7 +123,8 @@ describe('Category routes', () => {
     const response = await getProductCategoryHelper(
       null,
       deparmentModel,
-      '/categories/inDepartment/1'
+      '/categories/inDepartment/1',
+      'findOne'
     );
     expect(response).to.have.status(404);
   });
@@ -103,6 +134,7 @@ describe('Category routes', () => {
       mockData.departmentCategories,
       deparmentModel,
       '/categories/inDepartment/1',
+      'findOne',
       true
     );
     expect(response).to.have.status(500);
