@@ -32,15 +32,15 @@ describe('Products route', () => {
   };
 
   // eslint-disable-next-line no-shadow
-  const getByPkHelper = (data, error = false) => {
+  const getByPkHelper = (data, route, model, error = false) => {
     // eslint-disable-next-line no-unused-expressions
     error
-      ? sandBox.stub(productModel, 'findByPk').throws(['something went wrong'])
-      : sandBox.stub(productModel, 'findByPk').returns(data);
+      ? sandBox.stub(model, 'findByPk').throws(['something went wrong'])
+      : sandBox.stub(model, 'findByPk').returns(data);
 
     return chai
       .request(app)
-      .get('/products/16')
+      .get(route)
       .send();
   };
 
@@ -103,17 +103,17 @@ describe('Products route', () => {
   });
 
   it('should find and return a product by product_id', async () => {
-    const response = await getByPkHelper(mockData.productByPk);
+    const response = await getByPkHelper(mockData.productByPk, '/products/16', productModel);
     expect(response).to.have.status(200);
   });
 
   it('should return a 404 if a product is not found', async () => {
-    const response = await getByPkHelper(null);
+    const response = await getByPkHelper(null, '/products/16', productModel);
     expect(response).to.have.status(404);
   });
 
   it('should throw an error in case something went wrong', async () => {
-    const response = await getByPkHelper(null, true);
+    const response = await getByPkHelper(null, '/products/16', productModel, true);
     expect(response).to.have.status(500);
   });
 
@@ -141,6 +141,26 @@ describe('Products route', () => {
     const response = await searchHelper(
       '/departments',
       mockData.searchProducts,
+      departmentModel,
+      true
+    );
+    expect(response).to.have.status(500);
+  });
+
+  it('should find and return a department by department_id', async () => {
+    const response = await getByPkHelper(mockData.productByPk, '/departments/2', departmentModel);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if department is not found', async () => {
+    const response = await getByPkHelper(null, '/departments/2', departmentModel);
+    expect(response).to.have.status(404);
+  });
+
+  it('should find and return a department by department_id', async () => {
+    const response = await getByPkHelper(
+      mockData.productByPk,
+      '/departments/2',
       departmentModel,
       true
     );
