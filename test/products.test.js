@@ -8,6 +8,7 @@ import db from '../src/database/models';
 const { expect } = chai;
 const productModel = db.Product;
 const categoryModel = db.Category;
+const departmentModel = db.Department;
 
 describe('Products route', () => {
   let sandBox;
@@ -19,11 +20,11 @@ describe('Products route', () => {
     sandBox.restore();
   });
 
-  const searchHelper = (route, data, error = false) => {
+  const searchHelper = (route, data, model, error = false) => {
     // eslint-disable-next-line no-unused-expressions
     error
-      ? sandBox.stub(productModel, 'findAll').throws(['something went wrong'])
-      : sandBox.stub(productModel, 'findAll').returns(data);
+      ? sandBox.stub(model, 'findAll').throws(['something went wrong'])
+      : sandBox.stub(model, 'findAll').returns(data);
     return chai
       .request(app)
       .get(route)
@@ -76,13 +77,18 @@ describe('Products route', () => {
   it('should return a product on search', async () => {
     const response = await searchHelper(
       '/products/search?query_string=cat&all_words=off',
-      mockData.searchProducts
+      mockData.searchProducts,
+      productModel
     );
     expect(response).to.have.status(200);
   });
 
   it('should return a 404 if no item is found', async () => {
-    const response = await searchHelper('/products/search?query_string=cat&all_words=on', []);
+    const response = await searchHelper(
+      '/products/search?query_string=cat&all_words=on',
+      [],
+      productModel
+    );
     expect(response).to.have.status(404);
   });
 
@@ -90,6 +96,7 @@ describe('Products route', () => {
     const response = await searchHelper(
       '/products/search?query_string=cat&all_words=on',
       mockData.searchProducts,
+      productModel,
       true
     );
     expect(response).to.have.status(500);
@@ -122,6 +129,21 @@ describe('Products route', () => {
 
   it('should throw an error if something goes wrong', async () => {
     const response = await getDepartmentProductsHelper(mockData.departmentProducts, true);
+    expect(response).to.have.status(500);
+  });
+
+  it('should return all departments', async () => {
+    const response = await searchHelper('/departments', mockData.searchProducts, departmentModel);
+    expect(response).to.have.status(200);
+  });
+
+  it('should throw an error if thing are not right', async () => {
+    const response = await searchHelper(
+      '/departments',
+      mockData.searchProducts,
+      departmentModel,
+      true
+    );
     expect(response).to.have.status(500);
   });
 });

@@ -251,8 +251,8 @@ class ProductController {
    */
   static async getAllDepartments(req, res, next) {
     try {
-      const departments = await Department.findAll();
-      return res.status(200).json(departments);
+      const response = await db.Department.findAll();
+      return res.status(200).send(response);
     } catch (error) {
       return next(error);
     }
