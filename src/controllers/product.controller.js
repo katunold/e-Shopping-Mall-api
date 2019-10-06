@@ -267,16 +267,15 @@ class ProductController {
   static async getDepartment(req, res, next) {
     const { department_id } = req.params; // eslint-disable-line
     try {
-      const department = await Department.findByPk(department_id);
-      if (department) {
-        return res.status(200).json(department);
-      }
-      return res.status(404).json({
-        error: {
-          status: 404,
-          message: `Department with id ${department_id} does not exist`,  // eslint-disable-line
-        },
-      });
+      const department = await db.Department.findByPk(department_id);
+      return department
+        ? res.status(200).send(department)
+        : res.status(404).send({
+            error: {
+              status: 404,
+            message: `Department with id ${department_id} does not exist`,  // eslint-disable-line
+            },
+          });
     } catch (error) {
       return next(error);
     }

@@ -26,6 +26,19 @@ describe('Sign-up route', () => {
   tests to cover user sign-up
    */
 
+  it('should access the welcome response', async () => {
+    const response = await chai
+      .request(app)
+      .get('/')
+      .send();
+    expect(response).to.have.status(200);
+    expect(response.body)
+      .to.have.property('message')
+      .to.contain(
+        'Welcome to Turing E-commerce shop api, your goal is to implement the missing code or fix the bugs inside this project'
+      );
+  });
+
   it('should create new user account', done => {
     sandbox.stub(customerModel, 'findOne').returns(null);
     sandbox.stub(customerModel, 'create').returns(mockData.expectedOneResult);
