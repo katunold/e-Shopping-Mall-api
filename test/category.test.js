@@ -63,6 +63,37 @@ describe('Category routes', () => {
     expect(response).to.have.status(500);
   });
 
+  it('should return a single category', async () => {
+    const response = await getProductCategoryHelper(
+      mockData.productCategory,
+      categoryModel,
+      '/categories/1',
+      'findByPk'
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return 404 if a category is not found', async () => {
+    const response = await getProductCategoryHelper(
+      null,
+      categoryModel,
+      '/categories/1',
+      'findByPk'
+    );
+    expect(response).to.have.status(404);
+  });
+
+  it('should throw an error in case something goes wrong while fetching categories', async () => {
+    const response = await getProductCategoryHelper(
+      mockData.productCategory,
+      categoryModel,
+      '/categories/1',
+      'findByPk',
+      true
+    );
+    expect(response).to.have.status(500);
+  });
+
   it('should return all products in a specific category', async () => {
     const response = await getCategoryProductsHelper(mockData.productsInCategory);
     expect(response).to.have.status(200);
