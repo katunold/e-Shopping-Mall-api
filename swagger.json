@@ -34,6 +34,22 @@
     {
       "name": "Shipping",
       "description": "Everything about shipping"
+    },
+    {
+      "name": "Attributes",
+      "description": "Everything about attributes"
+    },
+    {
+      "name": "Products",
+      "description": "Everything about products"
+    },
+    {
+      "name": "Departments",
+      "description": "Everything about departments"
+    },
+    {
+      "name": "Categories",
+      "description": "Everything about categories"
     }
   ],
   "paths": {
@@ -630,6 +646,492 @@
           }
         }
       }
+    },
+    "/attributes": {
+      "get": {
+        "description": "Returns a list of all attributes",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Attributes"],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/attributes/{attribute_id}": {
+      "get": {
+        "description": "Returns a specific attribute",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Attributes"],
+        "parameters": [
+          {
+            "name": "attribute_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/attributes/values/{attribute_id}": {
+      "get": {
+        "description": "Return a list of all values attached to a specific attribute",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Attributes"],
+        "parameters": [
+          {
+            "name": "attribute_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/attributes/inProduct/{product_id}": {
+      "get": {
+        "description": "Return a list of a specific product attributes",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Attributes"],
+        "parameters": [
+          {
+            "name": "attribute_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/products/{product_id}/reviews": {
+      "post": {
+        "description": "Post a product review",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/product-review"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      },
+      "get": {
+        "description": "Returns a list of all reviews attached to a specific product",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "description": "Return a list of all products",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/products/search": {
+      "get": {
+        "description": "Return searched product",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "query_string",
+            "in": "query",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "all_words",
+            "in": "query",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/products/{product_id}": {
+      "get": {
+        "description": "Return a specific product",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/products/inCategory/{category_id}": {
+      "get": {
+        "description": "Return a list of all products attached to a specific category",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/products/inDepartment/{department_id}": {
+      "get": {
+        "description": "Return a list of all products attached to a specific department",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "department_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/departments": {
+      "get": {
+        "description": "Return a list of all departments or A specific department",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Departments"],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/departments/{department_id}": {
+      "get": {
+        "description": "Return a list of all departments or A specific department",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Departments"],
+        "parameters": [
+          {
+            "name": "department_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "description": "Return a list of all categories",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Categories"],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/categories/{category_id}": {
+      "get": {
+        "description": "Return a specific category",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/categories/inDepartment/{department_id}": {
+      "get": {
+        "description": "Return all categories attached to a specific department",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "department_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/categories/inProduct/{product_id}": {
+      "get": {
+        "description": "Return the category of a specific product",
+        "produces": ["application/json"],
+        "security": [],
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
     }
   },
   "parameters": {
@@ -884,6 +1386,32 @@
         },
         "example": {
           "quantity" : 20
+        }
+      }
+    },
+    "product-review": {
+      "in": "body",
+      "name": "Product review",
+      "description": "Post product review",
+      "schema": {
+        "type": "object",
+        "required": [
+          "review",
+          "rating"
+        ],
+        "properties": {
+          "review": {
+            "type": "string",
+            "default": false
+          },
+          "rating": {
+            "type": "integer",
+            "default": false
+          }
+        },
+        "example": {
+          "review": "I like the color of this product",
+          "rating": 3
         }
       }
     }
