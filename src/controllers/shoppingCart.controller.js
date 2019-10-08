@@ -395,6 +395,7 @@ class ShoppingCartController {
    */
   static async processStripePayment(req, res, next) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    let totalCost = 0;
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
@@ -403,7 +404,22 @@ class ShoppingCartController {
       },
     });
     const { email, stripeToken, order_id } = req.body; // eslint-disable-line
-    const { customer_id } = req;  // eslint-disable-line
+    const { sub } = req.auth;  // eslint-disable-line
+    const orderPlaced = await db.Order.findAll({
+      where: { order_id, customer_id: sub },
+      attributes: [],
+      include: [{ model: db.OrderDetail, as: 'orderItems', attributes: ['quantity', 'unit_cost'] }],
+    });
+    orderPlaced.forEach(item => {
+      // eslint-disable-next-line camelcase
+      const data = item.dataValues.orderItems;
+      data.forEach(internalItem => {
+        // eslint-disable-next-line camelcase
+        const { quantity, unit_cost } = internalItem.dataValues;
+        // eslint-disable-next-line camelcase
+        totalCost += quantity * unit_cost;
+      });
+    });
     let response;
     try {
       // implement code to process payment and send order confirmation email here
@@ -411,7 +427,7 @@ class ShoppingCartController {
         {
           source: stripeToken,
           description: 'I like it',
-          amount: 200,
+          amount: Math.round(totalCost),
           currency: 'gbp',
         },
         // eslint-disable-next-line consistent-return
@@ -425,7 +441,8 @@ class ShoppingCartController {
       const subject = 'Order has been placed successfully';
       const body = `
              Hello, 
-             \n\n Order with order_id ${order_id} has been placed
+             \n\n Order with order_id ${order_id} has been placed and it
+             costed you ${totalCost} pounds  
              `;
       const mailOptions = {
         from: 'no-reply@write-it.com',
