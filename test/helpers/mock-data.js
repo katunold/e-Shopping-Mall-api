@@ -1017,3 +1017,27 @@ exports.departmentProducts = {
     },
   ],
 };
+
+exports.shoppingCartData = [
+  {
+    item_id: 54,
+    cart_id: '5cg4w1llck1hlwxsa',
+    product_id: 50,
+    attributes: 'XL',
+    quantity: 2,
+    buy_now: true,
+    added_on: '2019-10-08T08:53:46.000Z',
+    Product: {
+      product_id: 98,
+      name: 'Kat Over New Moon',
+      description: 'Love making you feel lighthearted?',
+      price: '14.99',
+      discounted_price: '0.00',
+      thumbnail: 'kat-over-new-moon-thumbnail.gif',
+      ProductCategory: {
+        product_id: 98,
+        category_id: 4,
+      },
+    },
+  },
+];
