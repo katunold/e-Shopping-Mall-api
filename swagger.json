@@ -409,7 +409,7 @@
           {
             "name": "cart_id",
             "in": "path",
-            "type": "integer",
+            "type": "string",
             "required": true
           }
         ],
