@@ -214,6 +214,7 @@ class ShoppingCartController {
    */
   static async createOrder(req, res, next) {
     const errors = validationResult(req);
+    const detailedOrder = [];
     if (!errors.isEmpty()) {
       return Validations.errorDisplay(req, res, errors);
     }
@@ -224,12 +225,38 @@ class ShoppingCartController {
     };
     Object.assign(req.body, customer);
     try {
+      const cartItems = await db.ShoppingCart.findAll({
+        where: {
+          cart_id: req.body.cart_id,
+        },
+        include: [
+          {
+            model: db.Product,
+            foreignKey: 'product_id',
+          },
+        ],
+      });
       const orderData = await Actions.addData(db.Order, req.body, [
         'cart_id',
         'shipping_id',
         'tax_id',
         'customer_id',
       ]);
+      cartItems.forEach(item => {
+        // eslint-disable-next-line camelcase
+        const { item_id, product_id, attributes, Product, quantity } = item;
+        const orderItem = {
+          item_id,
+          order_id: orderData.order_id,
+          product_id,
+          attributes,
+          product_name: Product.name,
+          quantity,
+          unit_cost: Product.price,
+        };
+        detailedOrder.push(orderItem);
+      });
+      await db.OrderDetail.bulkCreate(detailedOrder);
       return res.status(201).send({ order_id: orderData.order_id });
     } catch (error) {
       return next(error);
@@ -292,7 +319,20 @@ class ShoppingCartController {
           customer_id: sub,
         },
         attributes: ['order_id'],
-        include: [{ model: db.OrderDetail, as: 'orderItems' }],
+        include: [
+          {
+            model: db.OrderDetail,
+            as: 'orderItems',
+            attributes: [
+              'item_id',
+              'product_id',
+              'attributes',
+              'product_name',
+              'quantity',
+              'unit_cost',
+            ],
+          },
+        ],
       });
       return orderResponse
         ? res.status(200).send(orderResponse)

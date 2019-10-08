@@ -10,6 +10,8 @@ const { expect } = chai;
 
 const orderModel = db.Order;
 const customerModel = db.Customer;
+const shoppingCartModel = db.ShoppingCart;
+const orderDetailModel = db.OrderDetail;
 
 describe('Order route', () => {
   let sandbox;
@@ -31,6 +33,8 @@ describe('Order route', () => {
     error
       ? sandbox.stub(orderModel, 'create').throws(['Something went wrong'])
       : sandbox.stub(orderModel, 'create').returns(mockData.orderCreated);
+    sandbox.stub(shoppingCartModel, 'findAll').returns(mockData.shoppingCartData);
+    sandbox.stub(orderDetailModel, 'bulkCreate').returns(null);
     sandbox.stub(orderModel, 'update').returns(true);
 
     return chai
