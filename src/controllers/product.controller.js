@@ -22,6 +22,7 @@ import { validationResult } from 'express-validator';
 import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
+import { redisdb } from '../utils/redis';
 /**
  * @class ProductController
  */
@@ -32,6 +33,7 @@ class ProductController {
    */
   static async getAllProducts(req, res, next) {
     const { query } = req;
+    const productRedisKey = req.url;
     // eslint-disable-next-line camelcase
     const { page, limit, offset, description_length } = query;
     const sqlQueryMap = {
@@ -40,7 +42,12 @@ class ProductController {
     };
 
     try {
+      const prod = await redisdb.get(productRedisKey);
+      if (prod) {
+        return res.status(200).send(JSON.parse(prod));
+      }
       const products = await db.Product.findAndCountAll(sqlQueryMap);
+      redisdb.set(productRedisKey, JSON.stringify(products));
       const productCount = products.count;
       const descriptionSummary = [];
       products.rows.forEach(item => {

@@ -4,6 +4,7 @@ import app from '../src';
 import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
+import { redisdb } from '../src/utils/redis';
 
 const { expect } = chai;
 const productModel = db.Product;
@@ -58,6 +59,17 @@ describe('Products route', () => {
 
   it('should get all products from the database', async () => {
     sandBox.stub(productModel, 'findAndCountAll').returns(mockData.products);
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'set').returns('OK');
+    const response = await chai
+      .request(app)
+      .get('/products?page=1&limit=5&description_length=50')
+      .send();
+    expect(response).to.have.status(200);
+  });
+
+  it('should get all products form redis cache', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.products));
     const response = await chai
       .request(app)
       .get('/products?page=1&limit=5&description_length=50')
@@ -67,6 +79,7 @@ describe('Products route', () => {
 
   it('should throw an error if something goes wrong', async () => {
     sandBox.stub(productModel, 'findAndCountAll').throws(['Something went wrong']);
+    sandBox.stub(redisdb, 'get').returns(null);
     const response = await chai
       .request(app)
       .get('/products?page=1&limit=5&description_length=50')
