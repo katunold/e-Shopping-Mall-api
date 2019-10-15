@@ -6,6 +6,7 @@ import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
 import { userSignUp } from './helpers/test-setup';
+import { redisdb } from '../src/utils/redis';
 
 const { expect } = chai;
 const productModel = db.Product;
@@ -77,16 +78,28 @@ describe('Review routes', () => {
   });
 
   it('should return a products reviews', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'set').returns('OK');
+    const response = await getProductReviewsHelper(mockData.productReviews);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return cached data', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.productReviews));
     const response = await getProductReviewsHelper(mockData.productReviews);
     expect(response).to.have.status(200);
   });
 
   it('should return 404 if product has no reviews', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'set').returns('OK');
     const response = await getProductReviewsHelper([]);
     expect(response).to.have.status(404);
   });
 
   it('should throw error if something goes wrong', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'set').returns('OK');
     const response = await getProductReviewsHelper([], true);
     expect(response).to.have.status(500);
   });

@@ -408,6 +408,10 @@ class ProductController {
     const { product_id } = req.params;
     const productReviews = [];
     try {
+      const cacheResponse = await redisdb.get(req.url);
+      if (cacheResponse) {
+        return res.status(200).send(JSON.parse(cacheResponse));
+      }
       const response = await db.Review.findAll({
         where: {
           product_id,
@@ -434,7 +438,7 @@ class ProductController {
           };
           productReviews.push(data);
         });
-
+        redisdb.setex(req.url, redisdb.expire, JSON.stringify(productReviews));
         return res.status(200).send(productReviews);
       }
 
