@@ -15,7 +15,9 @@ client.on('error', err => {
 
 // eslint-disable-next-line import/prefer-default-export
 export const redisdb = {
+  expire: 60,
   set: promisify(client.set).bind(client),
+  setex: promisify(client.setex).bind(client),
   get: promisify(client.get).bind(client),
   scan: promisify(client.scan).bind(client),
   delete: promisify(client.del).bind(client),
