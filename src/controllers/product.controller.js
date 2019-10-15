@@ -23,6 +23,7 @@ import db from '../database/models';
 import { Actions } from '../utils/db-actions';
 import Validations from '../utils/validation';
 import { redisdb } from '../utils/redis';
+
 /**
  * @class ProductController
  */
@@ -233,9 +234,13 @@ class ProductController {
    */
 
   static async getProduct(req, res, next) {
-    const { product_id } = req.params;  // eslint-disable-line
+    const { params, url } = req;  // eslint-disable-line
     try {
-      const product = await db.Product.findByPk(product_id, {
+      const cachedResponse = await redisdb.get(url);
+      if (cachedResponse) {
+        return res.status(200).send(JSON.parse(cachedResponse));
+      }
+      const product = await db.Product.findByPk(params.product_id, {
         include: [
           {
             model: db.AttributeValue,
@@ -254,6 +259,7 @@ class ProductController {
         ],
       });
       if (product) {
+        redisdb.setex(url, redisdb.expire, JSON.stringify(product));
         return res.status(200).send(product);
       }
       return res.status(404).send({ message: 'Product not found' });

@@ -116,16 +116,28 @@ describe('Products route', () => {
   });
 
   it('should find and return a product by product_id', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
+    const response = await getByPkHelper(mockData.productByPk, '/products/16', productModel);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return cached data', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.productByPk));
     const response = await getByPkHelper(mockData.productByPk, '/products/16', productModel);
     expect(response).to.have.status(200);
   });
 
   it('should return a 404 if a product is not found', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
     const response = await getByPkHelper(null, '/products/16', productModel);
     expect(response).to.have.status(404);
   });
 
   it('should throw an error in case something went wrong', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
     const response = await getByPkHelper(null, '/products/16', productModel, true);
     expect(response).to.have.status(500);
   });
