@@ -79,6 +79,7 @@ describe('Products route', () => {
 
   it('should throw an error if something goes wrong', async () => {
     sandBox.stub(productModel, 'findAndCountAll').throws(['Something went wrong']);
+    sandBox.stub(redisdb, 'get').returns(null);
     const response = await chai
       .request(app)
       .get('/products?page=1&limit=5&description_length=50')
