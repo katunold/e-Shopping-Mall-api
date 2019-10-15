@@ -1,7 +1,13 @@
 import redis from 'redis';
+import url from 'url';
 import { promisify } from 'util';
 
-const client = redis.createClient();
+// const client = redis.createClient();
+const redisURL = url.parse(process.env.REDIS_URL);
+const client =
+  process.env.NODE_ENV === 'production'
+    ? redis.createClient(redisURL.port, redisURL.hostname, { no_ready_check: true })
+    : redis.createClient();
 
 client.on('connect', () => {
   // eslint-disable-next-line no-console
