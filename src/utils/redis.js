@@ -8,7 +8,7 @@ const client =
   process.env.NODE_ENV === 'production'
     ? redis.createClient(redisURL.port, redisURL.hostname, { no_ready_check: true })
     : redis.createClient();
-
+client.auth(redisURL.auth.split(':')[1]);
 client.on('connect', () => {
   // eslint-disable-next-line no-console
   console.log('Redis client connected');
