@@ -32,8 +32,8 @@ class ProductController {
    * get all products
    */
   static async getAllProducts(req, res, next) {
-    const { query } = req;
-    const productRedisKey = req.url;
+    const { query, url } = req;
+    const productRedisKey = url;
     // eslint-disable-next-line camelcase
     const { page, limit, offset, description_length } = query;
     const sqlQueryMap = {
@@ -47,7 +47,7 @@ class ProductController {
         return res.status(200).send(JSON.parse(prod));
       }
       const products = await db.Product.findAndCountAll(sqlQueryMap);
-      redisdb.set(productRedisKey, JSON.stringify(products));
+      redisdb.setex(productRedisKey, redisdb.expire, JSON.stringify(products));
       const productCount = products.count;
       const descriptionSummary = [];
       products.rows.forEach(item => {
@@ -113,7 +113,7 @@ class ProductController {
       // eslint-disable-next-line camelcase
       return res.status(404).send({ message: `Product with name ${query_string} not found` });
     } catch (error) {
-      return res.status(500).send(error);
+      return next(error);
     }
   }
 
@@ -121,7 +121,8 @@ class ProductController {
    * get all products by category
    */
   static async getProductsByCategory(req, res, next) {
-    const { query, params } = req;
+    const { query, params, url } = req;
+    const productsInCategoryRedis = url;
     // eslint-disable-next-line camelcase
     const { page, limit, description_length } = query;
     const { category_id } = params; // eslint-disable-line
@@ -139,6 +140,10 @@ class ProductController {
       ],
     };
     try {
+      const cachedResponse = await redisdb.get(productsInCategoryRedis);
+      if (cachedResponse) {
+        return res.status(200).send(JSON.parse(cachedResponse));
+      }
       const products = await db.Product.findAndCountAll(sqlQueryMap);
       const descriptionSummary = [];
       if (products) {
@@ -158,10 +163,14 @@ class ProductController {
           descriptionSummary.push(data);
         });
 
-        return res.status(200).send({
+        const returnObj = {
           page,
           rows: descriptionSummary,
-        });
+        };
+
+        redisdb.setex(productsInCategoryRedis, redisdb.expire, JSON.stringify(returnObj));
+
+        return res.status(200).send(returnObj);
       }
 
       // eslint-disable-next-line camelcase

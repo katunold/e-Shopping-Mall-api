@@ -5,6 +5,7 @@ import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
 import { error } from 'winston';
+import { redisdb } from '../src/utils/redis';
 
 const { expect } = chai;
 const productModel = db.Product;
@@ -21,10 +22,12 @@ describe('Category routes', () => {
     sandBox.restore();
   });
 
-  const getCategoryProductsHelper = (data, error = false) => {
+  const getCategoryProductsHelper = (data, error = false, cachedData = null) => {
     error
       ? sandBox.stub(productModel, 'findAndCountAll').throws(['Something went wrong'])
       : sandBox.stub(productModel, 'findAndCountAll').returns(data);
+    sandBox.stub(redisdb, 'get').returns(cachedData);
+    sandBox.stub(redisdb, 'setex').returns('OK');
 
     return chai
       .request(app)
@@ -96,6 +99,15 @@ describe('Category routes', () => {
 
   it('should return all products in a specific category', async () => {
     const response = await getCategoryProductsHelper(mockData.productsInCategory);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return all from the cache storage', async () => {
+    const response = await getCategoryProductsHelper(
+      mockData.productsInCategory,
+      false,
+      JSON.stringify(mockData.productsInCategory)
+    );
     expect(response).to.have.status(200);
   });
 

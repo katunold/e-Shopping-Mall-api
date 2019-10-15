@@ -60,7 +60,7 @@ describe('Products route', () => {
   it('should get all products from the database', async () => {
     sandBox.stub(productModel, 'findAndCountAll').returns(mockData.products);
     sandBox.stub(redisdb, 'get').returns(null);
-    sandBox.stub(redisdb, 'set').returns('OK');
+    sandBox.stub(redisdb, 'setex').returns('OK');
     const response = await chai
       .request(app)
       .get('/products?page=1&limit=5&description_length=50')
