@@ -143,16 +143,27 @@ describe('Products route', () => {
   });
 
   it('should return all products attached to a specific department', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
+    const response = await getDepartmentProductsHelper(mockData.departmentProducts);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return cached data from redis', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.departmentProducts));
     const response = await getDepartmentProductsHelper(mockData.departmentProducts);
     expect(response).to.have.status(200);
   });
 
   it('should return 404 if department is not found', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
     const response = await getDepartmentProductsHelper(null);
     expect(response).to.have.status(404);
   });
 
   it('should throw an error if something goes wrong', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
     const response = await getDepartmentProductsHelper(mockData.departmentProducts, true);
     expect(response).to.have.status(500);
   });

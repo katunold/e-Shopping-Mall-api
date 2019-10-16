@@ -193,6 +193,10 @@ class ProductController {
     const { department_id } = req.params;
     const products = [];
     try {
+      const cachedResponse = await redisdb.get(req.url);
+      if (cachedResponse) {
+        return res.status(200).send(JSON.parse(cachedResponse));
+      }
       const response = await db.Category.findOne({
         where: {
           department_id,
@@ -220,7 +224,9 @@ class ProductController {
           const data = { product_id, name, description, price, discounted_price, thumbnail };
           products.push(data);
         });
-        return res.status(200).send({ rows: products });
+        const finalResponse = { rows: products };
+        redisdb.setex(req.url, redisdb.expire, JSON.stringify(finalResponse));
+        return res.status(200).send(finalResponse);
       }
       // eslint-disable-next-line camelcase
       return res.status(404).send({ message: `department with id ${department_id} not found` });
