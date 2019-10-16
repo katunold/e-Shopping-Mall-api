@@ -46,6 +46,19 @@ describe('Category routes', () => {
   };
 
   it('should return all categories', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
+    const response = await getProductCategoryHelper(
+      mockData.productCategory,
+      categoryModel,
+      '/categories',
+      'findAll'
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return data from the cache', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.productCategory));
     const response = await getProductCategoryHelper(
       mockData.productCategory,
       categoryModel,
@@ -56,6 +69,8 @@ describe('Category routes', () => {
   });
 
   it('should throw an error incase something is wrong while fetching all categories', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
     const response = await getProductCategoryHelper(
       mockData.productCategory,
       categoryModel,
