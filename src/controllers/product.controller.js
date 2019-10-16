@@ -299,8 +299,13 @@ class ProductController {
    */
   static async getDepartment(req, res, next) {
     const { department_id } = req.params; // eslint-disable-line
+    const cachedResponse = await redisdb.get(req.url);
     try {
+      if (cachedResponse) {
+        return res.status(200).send(JSON.parse(cachedResponse));
+      }
       const department = await db.Department.findByPk(department_id);
+      redisdb.setex(req.url, redisdb.expire, JSON.stringify(department));
       return department
         ? res.status(200).send(department)
         : res.status(404).send({
