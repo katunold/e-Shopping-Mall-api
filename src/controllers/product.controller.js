@@ -279,7 +279,12 @@ class ProductController {
    */
   static async getAllDepartments(req, res, next) {
     try {
+      const cachedResponse = await redisdb.get(req.url);
+      if (cachedResponse) {
+        return res.status(200).send(JSON.parse(cachedResponse));
+      }
       const response = await db.Department.findAll();
+      redisdb.setex(req.url, redisdb.expire, JSON.stringify(response));
       return res.status(200).send(response);
     } catch (error) {
       return next(error);

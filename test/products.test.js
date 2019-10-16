@@ -169,11 +169,20 @@ describe('Products route', () => {
   });
 
   it('should return all departments', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
+    const response = await searchHelper('/departments', mockData.searchProducts, departmentModel);
+    expect(response).to.have.status(200);
+  });
+
+  it('should return all departments', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.searchProducts));
     const response = await searchHelper('/departments', mockData.searchProducts, departmentModel);
     expect(response).to.have.status(200);
   });
 
   it('should throw an error if thing are not right', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
     const response = await searchHelper(
       '/departments',
       mockData.searchProducts,
