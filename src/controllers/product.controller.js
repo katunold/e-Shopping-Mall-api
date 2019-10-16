@@ -324,8 +324,14 @@ class ProductController {
    */
   static async getAllCategories(req, res, next) {
     // Implement code to get all categories here
+    const { url } = req;
+    const cachedResponse = await redisdb.get(url);
+    if (cachedResponse) {
+      return res.status(200).send(JSON.parse(cachedResponse));
+    }
     try {
       const response = await db.Category.findAll();
+      redisdb.setex(url, redisdb.expire, JSON.stringify(response));
       return res.status(200).send({ rows: response });
     } catch (error) {
       return next(error);
