@@ -344,8 +344,13 @@ class ProductController {
   static async getSingleCategory(req, res, next) {
     const { category_id } = req.params;  // eslint-disable-line
     // implement code to get a single category here
+    const cachedResponse = redisdb.get(req.url);
+    if (cachedResponse) {
+      return res.status(200).send(JSON.parse(cachedResponse));
+    }
     try {
       const response = await db.Category.findByPk(category_id);
+      redisdb.setex(req.url, redisdb.expire, JSON.stringify(response));
       return response
         ? res.status(200).send(response)
         : res.status(404).send({ message: `Category with id ${category_id} not found` });

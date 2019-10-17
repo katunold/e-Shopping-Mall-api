@@ -4,7 +4,6 @@ import app from '../src';
 import mockData from './helpers/mock-data';
 
 import db from '../src/database/models';
-import { error } from 'winston';
 import { redisdb } from '../src/utils/redis';
 
 const { expect } = chai;
@@ -82,6 +81,19 @@ describe('Category routes', () => {
   });
 
   it('should return a single category', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('ok');
+    const response = await getProductCategoryHelper(
+      mockData.productCategory,
+      categoryModel,
+      '/categories/1',
+      'findByPk'
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return cached a response', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.productCategory));
     const response = await getProductCategoryHelper(
       mockData.productCategory,
       categoryModel,
@@ -92,6 +104,7 @@ describe('Category routes', () => {
   });
 
   it('should return 404 if a category is not found', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
     const response = await getProductCategoryHelper(
       null,
       categoryModel,
@@ -102,6 +115,8 @@ describe('Category routes', () => {
   });
 
   it('should throw an error in case something goes wrong while fetching categories', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('ok');
     const response = await getProductCategoryHelper(
       mockData.productCategory,
       categoryModel,
