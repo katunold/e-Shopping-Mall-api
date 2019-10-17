@@ -365,6 +365,10 @@ class ProductController {
   static async getDepartmentCategories(req, res, next) {
     // implement code to get categories in a department here
     const { department_id } = req.params;  // eslint-disable-line
+    const cachedResponse = redisdb.get(req.url);
+    if (cachedResponse) {
+      return res.status(200).send(JSON.parse(cachedResponse));
+    }
     try {
       const response = await db.Department.findOne({
         where: {
@@ -380,7 +384,9 @@ class ProductController {
       });
 
       if (response) {
-        return res.status(200).send({ rows: response.Categories });
+        const responseDisplay = { rows: response.Categories };
+        redisdb.setex(req.url, redisdb.expire, JSON.stringify(responseDisplay));
+        return res.status(200).send(responseDisplay);
       }
       return res
         .status(404)

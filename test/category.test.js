@@ -183,6 +183,19 @@ describe('Category routes', () => {
   });
 
   it('should return all categories in a department', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
+    const response = await getProductCategoryHelper(
+      mockData.departmentCategories,
+      deparmentModel,
+      '/categories/inDepartment/1',
+      'findOne'
+    );
+    expect(response).to.have.status(200);
+  });
+
+  it('should return all categories in a department from a cache storage', async () => {
+    sandBox.stub(redisdb, 'get').returns(JSON.stringify(mockData.departmentCategories));
     const response = await getProductCategoryHelper(
       mockData.departmentCategories,
       deparmentModel,
@@ -193,6 +206,7 @@ describe('Category routes', () => {
   });
 
   it('should return 404 if department is not found', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
     const response = await getProductCategoryHelper(
       null,
       deparmentModel,
@@ -203,6 +217,8 @@ describe('Category routes', () => {
   });
 
   it('should throw an error in case something goes wrong', async () => {
+    sandBox.stub(redisdb, 'get').returns(null);
+    sandBox.stub(redisdb, 'setex').returns('OK');
     const response = await getProductCategoryHelper(
       mockData.departmentCategories,
       deparmentModel,
