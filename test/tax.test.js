@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import app from '../src';
 import mockData from './helpers/mock-data';
 import db from '../src/database/models';
+import { redisdb } from '../src/utils/redis';
 
 const { expect } = chai;
 const taxModel = db.Tax;
@@ -31,11 +32,21 @@ describe('Tax route', () => {
   };
 
   it('should return all taxes', async () => {
+    sandbox.stub(redisdb, 'get').returns(null);
+    sandbox.stub(redisdb, 'setex').returns('OK');
+    const response = await getTaxHelper();
+    expect(response).to.have.status(200);
+  });
+
+  it('should return all taxes from cache memory', async () => {
+    sandbox.stub(redisdb, 'get').returns(JSON.stringify(mockData.taxData));
     const response = await getTaxHelper();
     expect(response).to.have.status(200);
   });
 
   it('should throw error if something goes wrong', async () => {
+    sandbox.stub(redisdb, 'get').returns(null);
+    sandbox.stub(redisdb, 'setex').returns('OK');
     const response = await getTaxHelper(true);
     expect(response).to.have.status(500);
   });
