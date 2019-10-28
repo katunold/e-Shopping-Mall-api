@@ -6,6 +6,7 @@
  *  endpoints, request body/param, and response object for each of these method
  */
 import db from '../database/models';
+import { redisdb } from '../utils/redis';
 
 class TaxController {
   /**
@@ -13,7 +14,12 @@ class TaxController {
    */
   static async getAllTax(req, res, next) {
     try {
+      const cacheResponse = await redisdb.get(req.url);
+      if (cacheResponse) {
+        return res.status(200).send(JSON.parse(cacheResponse));
+      }
       const taxes = await db.Tax.findAll();
+      redisdb.setex(req.url, redisdb.expire, JSON.stringify(cacheResponse));
       return res.status(200).send(taxes);
     } catch (error) {
       return next(error);
