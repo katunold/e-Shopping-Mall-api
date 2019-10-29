@@ -56,16 +56,28 @@ describe('Tax route', () => {
    */
 
   it('should return a single order', async () => {
+    sandbox.stub(redisdb, 'get').returns(null);
+    sandbox.stub(redisdb, 'setex').returns('OK');
     const response = await getTaxHelper(false, 'findOne', mockData.taxData[1], '/tax/1');
     expect(response).to.have.status(200);
   });
 
+  it('should return single tax from cache memory', async () => {
+    sandbox.stub(redisdb, 'get').returns(JSON.stringify(mockData.taxData));
+    const response = await getTaxHelper();
+    expect(response).to.have.status(200);
+  });
+
   it('should return a 404 if tax is not found', async () => {
+    sandbox.stub(redisdb, 'get').returns(null);
+    sandbox.stub(redisdb, 'setex').returns('OK');
     const response = await getTaxHelper(false, 'findOne', null, '/tax/1');
     expect(response).to.have.status(404);
   });
 
   it('should throw an error if something goes wrong during the process getting a single tax', async () => {
+    sandbox.stub(redisdb, 'get').returns(null);
+    sandbox.stub(redisdb, 'setex').returns('OK');
     const response = await getTaxHelper(true, 'findOne', null, '/tax/1');
     expect(response).to.have.status(500);
   });

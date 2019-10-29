@@ -33,11 +33,16 @@ class TaxController {
     // eslint-disable-next-line camelcase
     const { tax_id } = req.params;
     try {
+      const cacheResponse = await redisdb.get(req.url);
+      if (cacheResponse) {
+        return res.status(200).send(JSON.parse(cacheResponse));
+      }
       const response = await db.Tax.findOne({
         where: {
           tax_id,
         },
       });
+      redisdb.setex(req.url, redisdb.expire, JSON.stringify(response));
       return response
         ? res.status(200).send(response)
         : res.status(404).send({
