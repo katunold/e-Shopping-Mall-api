@@ -1,11 +1,6 @@
 # e-Shopping-Mall-api [![Build Status](https://travis-ci.org/katunold/turing-api.svg?branch=ft-sign-up-168479110)](https://travis-ci.org/katunold/turing-api) [![Maintainability](https://api.codeclimate.com/v1/badges/736adb5529a297046571/maintainability)](https://codeclimate.com/github/katunold/turing-api/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/736adb5529a297046571/test_coverage)](https://codeclimate.com/github/katunold/turing-api/test_coverage)  
-To complete this challenge, you need to ensure all route returns a similar response object as described in our API guide.
-To achieve this goal
-- You will have to fix the existing bugs
-- Implement the incomplete functions,
-- Add test cases for the main functions of the system.
-- Add Dockerfile to the root of the project to run the app in docker environment
-
+## Description
+- e-Shopping-Mall-api is an e-commerce platform for online shopping
 
 ## Getting started
 
@@ -45,6 +40,3 @@ mysql -u <dbuser> -D <databasename> -p < ./src/database/database.sql
 
 * Run container
 `docker run --rm -p 8000:80 node_challenge`
-
-## Request and Response Object API guide for all Endpoints
-Check [here](https://docs.google.com/document/d/1J12z1vPo8S5VEmcHGNejjJBOcqmPrr6RSQNdL58qJyE/edit?usp=sharing)
