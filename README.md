@@ -3,6 +3,7 @@
 - e-Shopping-Mall-api is an e-commerce platform for online shopping
 
 ## Getting started
+[Link](https://turing-api-challenge.herokuapp.com/docs/) to working demo hosted on heroku
 
 ### Prerequisites
 
